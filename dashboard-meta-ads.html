@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Meta Ads — Cabana Burger</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0a0a0a;--card:#111;--card2:#161616;--border:#1e1e1e;
+  --app:#22c55e;--ifood:#ef4444;--ifood-bar:#ec4899;
+  --muted:#6b7280;--muted2:#9ca3af;
+}
+*{font-family:'Inter',sans-serif;box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:#fff;min-height:100vh}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:2px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px}
+.card2{background:var(--card2);border:1px solid var(--border);border-radius:10px}
+
+.mrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
+.mrow:last-child{border-bottom:none}
+.mlabel{color:var(--muted)}.mval{font-weight:600}
+
+.bbar{background:#1e1e1e;border-radius:6px;height:8px;overflow:hidden}
+.bbar-fill{height:100%;border-radius:6px;transition:width .6s}
+
+.btn{padding:8px 16px;border-radius:9px;font-size:12px;font-weight:700;border:1px solid var(--border);cursor:pointer;transition:all .15s;background:transparent;color:var(--muted2)}
+.btn:hover{background:#1a1a1a;color:#fff;border-color:#444}
+.btn.active,.btn-p{background:var(--app)!important;color:#000!important;border-color:var(--app)!important}
+.btn-p:hover{background:#16a34a!important}
+
+.ctab{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:700;border:1px solid;cursor:pointer;transition:all .15s;white-space:nowrap;background:transparent;color:var(--muted)}
+.ctab.active{color:#fff!important;background:rgba(255,255,255,.08)}
+
+.inp{background:#1a1a1a;border:1px solid #2e2e2e;color:#fff;padding:10px 14px;border-radius:9px;font-size:13px;outline:none;transition:border .15s}
+.inp:focus{border-color:var(--app)}
+.inp::placeholder{color:#444}
+label{font-size:12px;color:var(--muted2);font-weight:600;display:block;margin-bottom:6px}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(6px);z-index:200;display:flex;align-items:center;justify-content:center}
+.modal{background:#141414;border:1px solid #2a2a2a;border-radius:16px;padding:32px;width:100%;max-width:460px}
+.hidden{display:none!important}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp .3s ease forwards}
+@keyframes sh{0%{background-position:200%}100%{background-position:-200%}}
+.shimmer{background:linear-gradient(90deg,#161616 25%,#1e1e1e 50%,#161616 75%);background-size:200%;animation:sh 1.2s infinite;border-radius:8px}
+
+/* flatpickr */
+.flatpickr-calendar{background:#161616!important;border:1px solid #2a2a2a!important;border-radius:12px!important;box-shadow:0 20px 60px rgba(0,0,0,.8)!important}
+.flatpickr-day{color:#ccc!important;border-radius:7px!important}
+.flatpickr-day:hover{background:#222!important}
+.flatpickr-day.selected,.flatpickr-day.startRange,.flatpickr-day.endRange{background:var(--app)!important;border-color:var(--app)!important;color:#000!important;font-weight:700!important}
+.flatpickr-day.inRange{background:rgba(34,197,94,.15)!important;border-color:rgba(34,197,94,.15)!important;color:#fff!important}
+.flatpickr-months,.flatpickr-weekdays{background:transparent!important}
+.flatpickr-month,.flatpickr-current-month input.cur-year{color:#fff!important}
+.flatpickr-weekday{color:var(--muted)!important}
+.flatpickr-current-month .flatpickr-monthDropdown-months{background:#161616!important;color:#fff!important}
+.flatpickr-prev-month,.flatpickr-next-month{color:#999!important;fill:#999!important}
+
+.badge-app  {display:inline-flex;align-items:center;background:var(--app);color:#000;padding:3px 14px;border-radius:20px;font-weight:800;font-size:11px;letter-spacing:.5px}
+.badge-ifood{display:inline-flex;align-items:center;background:var(--ifood);color:#fff;padding:3px 14px;border-radius:20px;font-weight:800;font-size:11px;letter-spacing:.5px}
+
+/* comparação */
+.cmp-row{display:grid;grid-template-columns:1fr 130px 1fr;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
+.cmp-row:last-child{border-bottom:none}
+.cmp-lbl{text-align:center;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.3px}
+.cmp-a{text-align:right;font-weight:600}
+.cmp-b{text-align:left;font-weight:600}
+.win{color:var(--app)!important}
+.lose{color:#374151!important;font-weight:400!important}
+
+/* criativos */
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:6px;margin-top:10px}
+.thumb{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;border:1px solid #2a2a2a;cursor:zoom-in;transition:transform .15s,box-shadow .15s}
+.thumb:hover{transform:scale(1.05);box-shadow:0 0 0 2px var(--app)}
+.tname{font-size:9px;color:var(--muted);margin-top:3px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+
+.lb{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:zoom-out}
+.lb img{max-width:90vw;max-height:80vh;border-radius:10px;object-fit:contain}
+.lb-n{font-size:12px;color:var(--muted2);max-width:80vw;text-align:center}
+
+.error-box{background:#1a0a0a;border:1px solid #4a1010;border-radius:12px;padding:20px;color:#fca5a5;font-size:13px;line-height:1.8}
+
+@media(max-width:780px){
+  .kpi-grid{grid-template-columns:repeat(3,1fr)!important}
+  .chart-grid{grid-template-columns:1fr!important}
+  .duo{grid-template-columns:1fr!important}
+  .duo-div{display:none!important}
+  .cmp-wrap{display:none!important}
+  .budget-grid{grid-template-columns:1fr 110px 50px!important}
+  .budget-bar{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- MODAL CONFIG -->
+<div id="modalCfg" class="modal-bg hidden">
+  <div class="modal fu">
+    <div style="margin-bottom:22px">
+      <div style="font-size:11px;color:var(--app);font-weight:700;letter-spacing:1px;margin-bottom:6px">CONFIGURAÇÕES</div>
+      <h2 style="font-size:20px;font-weight:900">Meta Ads Dashboard</h2>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div><label>Access Token *</label><input id="cfgToken" class="inp" style="width:100%" type="password" placeholder="EAAxxxxxx"/></div>
+      <div><label>Ad Account ID *</label><input id="cfgAccount" class="inp" style="width:100%" placeholder="act_849765918860539"/></div>
+      <div><label>Nome do cliente</label><input id="cfgClient" class="inp" style="width:100%" placeholder="Cabana Burger"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label>Keyword APP</label><input id="cfgApp" class="inp" placeholder="APP"/></div>
+        <div><label>Keyword iFood</label><input id="cfgIfood" class="inp" placeholder="IFOOD"/></div>
+      </div>
+      <button class="btn btn-p" onclick="saveConfig()" style="padding:12px;font-size:14px;width:100%;margin-top:4px">Salvar →</button>
+      <button class="btn" onclick="document.getElementById('modalCfg').classList.add('hidden')" style="padding:10px;width:100%">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lb" class="lb hidden" onclick="closeLb()">
+  <img id="lbImg" src="" alt=""/>
+  <div id="lbN" class="lb-n"></div>
+</div>
+
+<!-- HEADER -->
+<header style="background:#000;border-bottom:1px solid #1a1a1a;position:sticky;top:0;z-index:100">
+  <div style="max-width:1320px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:16px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span id="hdrName" style="font-size:17px;font-weight:900;letter-spacing:-.5px">Cabana Burger</span>
+      <span style="background:var(--app);color:#000;padding:2px 10px;border-radius:6px;font-size:10px;font-weight:800;letter-spacing:.5px">META ADS</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span id="sDot" style="width:7px;height:7px;border-radius:50%;background:#333;flex-shrink:0;transition:background .3s"></span>
+      <span id="sTxt" style="font-size:11px;color:var(--muted)">—</span>
+      <button class="btn" onclick="openCfg()" style="font-size:11px;padding:5px 12px">⚙ Config</button>
+    </div>
+  </div>
+</header>
+
+<!-- FILTROS -->
+<div style="background:#0d0d0d;border-bottom:1px solid #1a1a1a;position:sticky;top:56px;z-index:90">
+  <div style="max-width:1320px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;flex-wrap:wrap;gap:10px">
+    <input id="datePicker" class="inp" style="width:230px;cursor:pointer" readonly placeholder="Selecione o período…"/>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn" onclick="preset('this_month')">Este mês</button>
+      <button class="btn" onclick="preset('last_month')">Mês anterior</button>
+      <button class="btn" onclick="preset('last_7')">7 dias</button>
+      <button class="btn" onclick="preset('last_30')">30 dias</button>
+      <button class="btn" onclick="preset('last_90')">90 dias</button>
+    </div>
+    <button class="btn btn-p" onclick="run()" style="margin-left:auto;padding:9px 22px">↻ Buscar dados</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main style="max-width:1320px;margin:0 auto;padding:32px 24px">
+  <div id="content">
+    <div style="text-align:center;padding:100px 0;color:var(--muted)">
+      <div style="font-size:44px;margin-bottom:16px">📊</div>
+      <div style="font-size:15px;font-weight:600;color:var(--muted2)">Selecione o período e clique em "Buscar dados"</div>
+    </div>
+  </div>
+</main>
+
+<footer style="text-align:center;padding:28px;color:#1e1e1e;font-size:12px;border-top:1px solid #111">
+  Dashboard Meta Ads · <strong style="color:#2a2a2a">Imagenou Digital</strong>
+</footer>
+
+<script>
+// ══════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════
+const DEFAULTS={
+  token:"EAAbLb68XdEABP4ZAZBOgZAtxm2QPcyvzteXmaZBh0wcloTaeJTu9zuNpyOLRpAlYcIqbLDTsErxwSs96ytuBMKDORCbjIAclKNvFSnIj6mYCZCFKbiRB0tEEZBmxCaW5ZBg7pAn7jYuPZANZAtnPMxCMEXZATxzizbw6lv8UZC0XzvamKqA7mo1OOCZCGDnTrdA5",
+  account:"act_849765918860539",
+  client:"Cabana Burger",
+  appKw:"APP",
+  ifoodKw:"IFOOD",
+};
+
+// level=campaign — idêntico ao n8n
+const FIELDS_INS=[
+  "campaign_name","campaign_id","date_start","date_stop",
+  "spend","cpc","cost_per_action_type","ctr","cpm",
+  "actions","conversions","purchase_roas",
+  "impressions","reach","clicks","frequency","inline_link_clicks"
+].join(",");
+
+// Criativos: inclui campaign + adset para identificar canal
+const FIELDS_ADS="id,name,campaign{id,name},adset{id,name},status,creative{thumbnail_url,image_url}";
+
+const API="https://graph.facebook.com/v24.0";
+let CFG={},STATE={since:"",until:""},CHARTS={},fp;
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+window.addEventListener("DOMContentLoaded",()=>{
+  try{CFG=JSON.parse(localStorage.getItem("metaCfg")||"{}");}catch(_){}
+  if(!CFG.token) CFG={...DEFAULTS};
+  applyConfig();
+  fp=flatpickr("#datePicker",{mode:"range",dateFormat:"d/m/Y",locale:"pt",showMonths:2,
+    onChange(d){if(d.length===2){STATE.since=iso(d[0]);STATE.until=iso(d[1]);}}});
+  preset("last_month");
+});
+const iso=d=>d.toISOString().slice(0,10);
+
+function preset(p){
+  const now=new Date(),utc=(y,m,d)=>new Date(Date.UTC(y,m,d));
+  let s,e;
+  if(p==="this_month"){s=utc(now.getUTCFullYear(),now.getUTCMonth(),1);e=utc(now.getUTCFullYear(),now.getUTCMonth()+1,0);}
+  else if(p==="last_month"){const pm=now.getUTCMonth()-1,py=pm<0?now.getUTCFullYear()-1:now.getUTCFullYear(),pmf=pm<0?11:pm;s=utc(py,pmf,1);e=utc(py,pmf+1,0);}
+  else if(p==="last_7"){s=new Date(Date.now()-6*864e5);e=new Date();}
+  else if(p==="last_30"){s=new Date(Date.now()-29*864e5);e=new Date();}
+  else{s=new Date(Date.now()-89*864e5);e=new Date();}
+  STATE.since=iso(s);STATE.until=iso(e);fp&&fp.setDate([s,e]);
+}
+
+// ══════════════════════════════════════════
+//  CONFIG UI
+// ══════════════════════════════════════════
+function openCfg(){
+  document.getElementById("cfgToken").value  =CFG.token  ||"";
+  document.getElementById("cfgAccount").value=CFG.account||"";
+  document.getElementById("cfgClient").value =CFG.client ||"";
+  document.getElementById("cfgApp").value    =CFG.appKw  ||"APP";
+  document.getElementById("cfgIfood").value  =CFG.ifoodKw||"IFOOD";
+  document.getElementById("modalCfg").classList.remove("hidden");
+}
+function saveConfig(){
+  const t=document.getElementById("cfgToken").value.trim();
+  const a=document.getElementById("cfgAccount").value.trim();
+  if(!t||!a){alert("Preencha Token e Account ID.");return;}
+  CFG={token:t,account:a.startsWith("act_")?a:"act_"+a,
+    client:document.getElementById("cfgClient").value.trim()||"Cabana Burger",
+    appKw:document.getElementById("cfgApp").value.trim().toUpperCase()||"APP",
+    ifoodKw:document.getElementById("cfgIfood").value.trim().toUpperCase()||"IFOOD"};
+  localStorage.setItem("metaCfg",JSON.stringify(CFG));
+  applyConfig();document.getElementById("modalCfg").classList.add("hidden");
+}
+function applyConfig(){document.getElementById("hdrName").textContent=CFG.client||"Cabana Burger";setStatus("ready");}
+function setStatus(s,t){
+  const m={ready:["#22c55e","Conectado"],loading:["#f59e0b","Buscando…"],error:["#ef4444","Erro"]};
+  document.getElementById("sDot").style.background=m[s][0];
+  document.getElementById("sTxt").textContent=t||m[s][1];
+}
+
+// ══════════════════════════════════════════
+//  FETCH
+// ══════════════════════════════════════════
+async function run(){
+  if(!STATE.since||!STATE.until){alert("Selecione o período.");return;}
+  setStatus("loading");renderLoading();
+  try{
+    const[ins,ads]=await Promise.all([fetchInsights(),fetchAds()]);
+    render(process(ins,ads));
+    setStatus("ready");
+  }catch(err){setStatus("error");renderErr(err);}
+}
+
+async function fetchInsights(){
+  const p=new URLSearchParams({
+    level:"campaign",                          // ← nível de campanha, igual ao n8n
+    time_range:JSON.stringify({since:STATE.since,until:STATE.until}),
+    time_increment:"1",
+    fields:FIELDS_INS,
+    filtering:JSON.stringify([{field:"campaign.effective_status",operator:"IN",value:["ACTIVE","PAUSED"]}]),
+    limit:"500",access_token:CFG.token,
+  });
+  return paginate(`${API}/${CFG.account}/insights?${p}`);
+}
+
+async function fetchAds(){
+  const p=new URLSearchParams({
+    fields:FIELDS_ADS,
+    filtering:JSON.stringify([{field:"ad.effective_status",operator:"IN",value:["ACTIVE"]}]),
+    limit:"100",access_token:CFG.token,
+  });
+  try{return paginate(`${API}/${CFG.account}/ads?${p}`);}
+  catch(e){console.warn("Criativos:",e.message);return[];}
+}
+
+async function paginate(url){
+  let all=[],next=url;
+  while(next){
+    const res=await fetch(next),json=await res.json();
+    if(json.error){
+      const e=json.error;
+      if(e.code===190)throw new Error("TOKEN_EXPIRED");
+      if(e.code===200||e.code===10)throw new Error("PERMISSION");
+      if(e.code===100)throw new Error("INVALID_PARAM: "+e.message);
+      throw new Error(e.message);
+    }
+    all.push(...(json.data||[]));
+    next=json.paging?.next||null;
+  }
+  return all;
+}
+
+// ══════════════════════════════════════════
+//  PROCESS
+//  Agrupa campanhas com mesmo nome-base
+//  (remove a keyword APP/IFOOD do nome)
+// ══════════════════════════════════════════
+const PALETTE=["#dc2626","#b45309","#374151","#166534","#d97706","#7c3aed","#0369a1","#be185d","#0f766e","#9a3412"];
+const _cc={},_ci={n:0};
+function pickColor(n){if(!_cc[n])_cc[n]=PALETTE[(_ci.n++)%PALETTE.length];return _cc[n];}
+
+// Detecta canal pelo nome da campanha
+function getChannel(name, appKw, ifoodKw){
+  const u=name.toUpperCase();
+  // Testa primeiro IFOOD (mais específico)
+  if(u.includes("["+ifoodKw+"]")||u.includes(ifoodKw)) return "ifood";
+  if(u.includes("["+appKw+"]")  ||u.includes(appKw))   return "app";
+  return "app"; // padrão
+}
+
+// Remove keyword do nome para obter nome-base do grupo
+function baseName(name, appKw, ifoodKw){
+  let b=name
+    .replace(new RegExp("\\[\\s*"+appKw+"\\s*\\]","gi"),"")   // [APP] ou [ APP ]
+    .replace(new RegExp("\\[\\s*"+ifoodKw+"\\s*\\]","gi"),"") // [IFOOD]
+    .replace(new RegExp("[-_\\s]+"+appKw+"(?=[-_\\s\\[\\]]|$)","gi")," ") // _APP_ ou -APP-
+    .replace(new RegExp("[-_\\s]+"+ifoodKw+"(?=[-_\\s\\[\\]]|$)","gi")," ")
+    .replace(new RegExp("^"+appKw+"[-_\\s]*","gi"),"")         // APP no início
+    .replace(new RegExp("^"+ifoodKw+"[-_\\s]*","gi"),"")
+    .replace(/\[\s*\]/g,"")          // colchetes vazios
+    .replace(/^[\s_\-]+|[\s_\-]+$/g,"") // início E fim
+    .replace(/\s{2,}/g," ")          // espaços duplos
+    .trim();
+  return b||name;
+}
+
+// Chave normalizada para agrupamento (case-insensitive, whitespace colapsado)
+function groupKey(base){
+  return base.toLowerCase().replace(/\s+/g," ").trim();
+}
+
+function blank(){return{spend:0,impressions:0,clicks:0,reach:0,linkClicks:0,
+  purchases:0,cpl:0,cpm:0,ctr:0,cpcLink:0,roas:0,frequency:0,
+  _act:{},_roasSum:0,_roasW:0,_freqSum:0,_freqDays:0,campaignIds:[]};}
+
+function acc(m,r){
+  m.spend       +=parseFloat(r.spend||0);
+  m.impressions +=parseInt(r.impressions||0);
+  m.clicks      +=parseInt(r.clicks||0);
+  m.reach       +=parseInt(r.reach||0);
+  m.linkClicks  +=parseInt(r.inline_link_clicks||0);
+  const freq=parseFloat(r.frequency||0),imp=parseInt(r.impressions||0);
+  if(freq>0&&imp>0){m._freqSum+=freq*imp;m._freqDays+=imp;}
+  (r.actions||[]).forEach(a=>{m._act[a.action_type]=(m._act[a.action_type]||0)+parseFloat(a.value||0);});
+  (r.purchase_roas||[]).forEach(a=>{const v=parseFloat(a.value||0),s=parseFloat(r.spend||0);if(v>0&&s>0){m._roasSum+=v*s;m._roasW+=s;}});
+  if(r.campaign_id&&!m.campaignIds.includes(r.campaign_id)) m.campaignIds.push(r.campaign_id);
+}
+
+function fin(m){
+  m.purchases=m._act["purchase"]||m._act["offsite_conversion.fb_pixel_purchase"]||m._act["onsite_conversion.purchase"]||0;
+  m.cpl      =m.purchases>0?m.spend/m.purchases:0;
+  m.cpm      =m.impressions>0?m.spend/m.impressions*1000:0;
+  m.ctr      =m.impressions>0?m.clicks/m.impressions*100:0;
+  m.cpcLink  =m.linkClicks>0?m.spend/m.linkClicks:0;
+  m.roas     =m._roasW>0?m._roasSum/m._roasW:0;
+  m.frequency=m._freqDays>0?m._freqSum/m._freqDays:0;
+}
+
+function process(insightRows, adsRows){
+  const appKw  =(CFG.appKw  ||"APP").toUpperCase();
+  const ifoodKw=(CFG.ifoodKw||"IFOOD").toUpperCase();
+
+  // ── 1. Agrupa por nome-base ──
+  const groups={};   // key = nome-base
+  const orderMap={}; // mantém ordem de aparecimento
+
+  insightRows.forEach(r=>{
+    const cname=r.campaign_name||"—";
+    const ch   =getChannel(cname,appKw,ifoodKw);
+    const base =baseName(cname,appKw,ifoodKw);
+    const key  =groupKey(base);      // chave normalizada p/ agrupamento
+
+    if(!groups[key]){
+      groups[key]={base,color:pickColor(key),app:blank(),ifood:blank()};
+      orderMap[key]=Object.keys(orderMap).length;
+    }
+    // mantém o display name mais curto como representante do grupo
+    if(base.length < groups[key].base.length) groups[key].base=base;
+    acc(groups[key][ch], r);
+  });
+
+  // ── 2. Criativos indexados por campaign_id ──
+  // Agrupa thumbs por campaign_id e por canal (adset name)
+  const thumbById={};  // {campaign_id: {app:[],ifood:[],all:[]}}
+  adsRows.forEach(ad=>{
+    const cr=ad.creative;if(!cr)return;
+    const url=cr.thumbnail_url||cr.image_url;if(!url)return;
+    const cid=ad.campaign?.id;if(!cid)return;
+    const aname=(ad.adset?.name||"").toUpperCase();
+    if(!thumbById[cid])thumbById[cid]={app:[],ifood:[],all:[]};
+    const b=thumbById[cid];
+    const entry={url,adName:ad.name||""};
+    const dup=arr=>arr.some(x=>x.url===url);
+    if(!dup(b.all))b.all.push(entry);
+    if(aname.includes(ifoodKw)){if(!dup(b.ifood))b.ifood.push(entry);}
+    else                       {if(!dup(b.app))  b.app.push(entry);}
+  });
+
+  // ── 3. Associa criativos a cada grupo por canal ──
+  const campaigns=Object.values(groups)
+    .sort((a,b)=>orderMap[groupKey(a.base)]-orderMap[groupKey(b.base)])
+    .map(g=>{
+      fin(g.app); fin(g.ifood);
+      g.hasApp  =g.app.spend>0;
+      g.hasIfood=g.ifood.spend>0;
+      g.both    =g.hasApp&&g.hasIfood;
+      g.investment=g.app.spend+g.ifood.spend;
+
+      // Junta thumbs dos IDs de campanha de cada canal
+      const merge=(ids,key)=>{
+        const seen=new Set(),out=[];
+        ids.forEach(id=>{(thumbById[id]?.[key]||[]).forEach(t=>{if(!seen.has(t.url)){seen.add(t.url);out.push(t);}});});
+        return out;
+      };
+      g.thumbsApp  =merge(g.app.campaignIds,"app");
+      g.thumbsIfood=merge(g.ifood.campaignIds,"ifood");
+      // Se não separou por adset keyword, usa "all"
+      if(!g.thumbsApp.length)   g.thumbsApp  =merge(g.app.campaignIds,"all");
+      if(!g.thumbsIfood.length) g.thumbsIfood=merge(g.ifood.campaignIds,"all");
+
+      return g;
+    }).filter(g=>g.investment>0);
+
+  campaigns.sort((a,b)=>b.investment-a.investment);
+  const total=campaigns.reduce((s,c)=>s+c.investment,0);
+  campaigns.forEach(c=>{c.pct=total>0?c.investment/total*100:0;});
+
+  return{campaigns,total,since:STATE.since,until:STATE.until};
+}
+
+// ══════════════════════════════════════════
+//  RENDER LOADING / ERRO
+// ══════════════════════════════════════════
+function renderLoading(){
+  document.getElementById("content").innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:28px">
+      ${[1,2,3,4,5,6].map(()=>`<div class="shimmer" style="height:82px"></div>`).join("")}
+    </div>
+    <div class="shimmer" style="height:180px;margin-bottom:24px"></div>
+    ${[1,2,3].map(()=>`<div class="shimmer" style="height:300px;margin-bottom:14px"></div>`).join("")}`;}
+
+function renderErr(err){
+  const m={TOKEN_EXPIRED:["Token expirado","Gere um novo no <a href='https://developers.facebook.com/tools/explorer/' target='_blank' style='color:var(--app)'>Graph API Explorer</a> com <code>ads_read</code> e <code>read_insights</code>."],PERMISSION:["Permissão negada","Token precisa de <code>ads_read</code> e <code>read_insights</code>."],INVALID_PARAM:["Account ID inválido","Formato: <code>act_123456789</code>."]};
+  const[t,d]=m[err.message?.split(":")[0]]||["Erro na API",err.message||"Erro desconhecido."];
+  document.getElementById("content").innerHTML=`<div class="error-box" style="max-width:540px;margin:40px auto"><div style="font-size:26px;margin-bottom:12px">⚠️</div><strong style="color:#ef4444;font-size:15px">${t}</strong><p style="margin-top:8px">${d}</p><button class="btn" onclick="openCfg()" style="margin-top:16px">⚙ Configurações</button></div>`;}
+
+// ══════════════════════════════════════════
+//  RENDER DASHBOARD
+// ══════════════════════════════════════════
+function render(data){
+  const C=data.campaigns;
+  const totP=C.reduce((s,c)=>s+c.app.purchases,0);
+  const totC=C.reduce((s,c)=>s+c.app.clicks+c.ifood.clicks,0);
+  const totI=C.reduce((s,c)=>s+c.app.impressions+c.ifood.impressions,0);
+  const totL=C.reduce((s,c)=>s+c.ifood.linkClicks,0);
+  const avgCTR=C.length?C.reduce((s,c)=>s+c.app.ctr,0)/C.length:0;
+
+  const kpis=[
+    {icon:"💰",lbl:"Investimento Total",val:R(data.total),  clr:"var(--app)"},
+    {icon:"🛒",lbl:"Compras (App)",     val:N(totP),        clr:"#22c55e"},
+    {icon:"🔗",lbl:"Cliques iFood",     val:N(totL),        clr:"var(--ifood)"},
+    {icon:"👆",lbl:"Total Cliques",     val:N(totC),        clr:"#3b82f6"},
+    {icon:"👁",lbl:"Impressões",        val:N(totI),        clr:"#8b5cf6"},
+    {icon:"📊",lbl:"CTR Médio",         val:avgCTR.toFixed(2)+"%",clr:"#f59e0b"},
+  ];
+
+  document.getElementById("content").innerHTML=`
+    <!-- Período -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px" class="fu">
+      <div>
+        <div style="font-size:11px;color:var(--app);font-weight:700;letter-spacing:1px">RELATÓRIO META ADS</div>
+        <h1 style="font-size:26px;font-weight:900;letter-spacing:-.5px;margin-top:4px">${periodLabel(data.since,data.until)}</h1>
+        <div style="color:var(--muted);font-size:13px;margin-top:3px">${DD(data.since)} a ${DD(data.until)}</div>
+      </div>
+      <div class="card2" style="padding:16px 24px;text-align:right">
+        <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px">INVESTIMENTO TOTAL</div>
+        <div style="font-size:30px;font-weight:900;color:var(--app);margin-top:2px">${R(data.total)}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${C.length} grupos de campanha</div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:28px">
+      ${kpis.map(k=>`<div class="card2 fu" style="padding:16px"><div style="font-size:20px;margin-bottom:8px">${k.icon}</div><div style="font-size:21px;font-weight:800;color:${k.clr}">${k.val}</div><div style="font-size:11px;color:var(--muted);margin-top:3px">${k.lbl}</div></div>`).join("")}
+    </div>
+
+    <!-- Divisão de Verba -->
+    <div class="card" style="padding:22px;margin-bottom:24px">
+      <div style="font-size:11px;color:var(--app);font-weight:700;letter-spacing:1px;margin-bottom:16px">■ DIVISÃO DE VERBA</div>
+      <div class="budget-grid" style="display:grid;grid-template-columns:1fr 120px 54px 200px;gap:14px;align-items:center;padding-bottom:8px;border-bottom:2px solid #1e1e1e;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;text-transform:uppercase">
+        <span>Campanha</span><span>Valor</span><span>%</span><span class="budget-bar">Distribuição</span>
+      </div>
+      ${C.map(c=>`
+        <div class="budget-grid" style="display:grid;grid-template-columns:1fr 120px 54px 200px;gap:14px;align-items:center;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.03)">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="width:9px;height:9px;border-radius:2px;background:${c.color};flex-shrink:0"></span>
+            <span style="font-weight:700;font-size:13px">${c.base}</span>
+            ${c.both?`<span style="font-size:9px;background:rgba(34,197,94,.1);color:var(--app);border:1px solid rgba(34,197,94,.2);border-radius:4px;padding:1px 6px;font-weight:700">APP + iFOOD</span>`:`<span style="font-size:9px;background:rgba(107,114,128,.08);color:var(--muted);border:1px solid #2a2a2a;border-radius:4px;padding:1px 6px;font-weight:700">${c.hasApp?"APP":"iFOOD"}</span>`}
+          </div>
+          <div style="font-size:14px;font-weight:700">${R(c.investment)}</div>
+          <div style="font-size:13px;color:var(--muted2);font-weight:600">${c.pct.toFixed(1)}%</div>
+          <div class="budget-bar"><div class="bbar"><div class="bbar-fill" style="width:${c.pct}%;background:${c.color}"></div></div></div>
+        </div>`).join("")}
+      <div class="budget-grid" style="display:grid;grid-template-columns:1fr 120px 54px 200px;gap:14px;padding:12px 0 0;border-top:2px solid #1e1e1e;margin-top:4px">
+        <span style="font-weight:800;font-size:13px">TOTAL</span>
+        <span style="font-weight:800;font-size:15px;color:var(--app)">${R(data.total)}</span>
+        <span style="font-weight:800;font-size:13px">100%</span>
+        <span></span>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="chart-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+      <div class="card" style="padding:20px">
+        <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:14px">INVESTIMENTO APP vs iFOOD</div>
+        <canvas id="chartBar" height="230"></canvas>
+      </div>
+      <div class="card" style="padding:20px">
+        <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:14px">DISTRIBUIÇÃO POR CAMPANHA</div>
+        <canvas id="chartDonut" height="230"></canvas>
+      </div>
+    </div>
+
+    <!-- Filtro -->
+    <div style="display:flex;align-items:center;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px">
+      <span style="font-size:10px;color:var(--muted);font-weight:700;white-space:nowrap">CAMPANHAS:</span>
+      <button class="ctab active" style="border-color:#444" onclick="filterC('all',this)">Todas</button>
+      ${C.map(c=>`<button class="ctab" style="border-color:${c.color}" onclick="filterC('${groupKey(c.base)}',this)">${c.base}</button>`).join("")}
+    </div>
+
+    <!-- Cards -->
+    <div id="cards" style="display:flex;flex-direction:column;gap:16px">
+      ${C.map((c,i)=>campaignCard(c,i)).join("")}
+    </div>`;
+
+  buildCharts(data);
+}
+
+// ══════════════════════════════════════════
+//  CARD
+// ══════════════════════════════════════════
+function campaignCard(c,i){
+  const{app,ifood,hasApp,hasIfood,both,base,color}=c;
+
+  // ── Campanha com APP e iFOOD ──
+  if(both){
+    return`
+    <div class="card campaign-card fu" data-key="${groupKey(base)}" style="overflow:hidden;animation-delay:${i*.06}s">
+      <!-- Cabeçalho -->
+      <div style="background:${color};padding:14px 24px;display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-weight:900;font-size:16px;letter-spacing:.5px">${base}</span>
+          <span style="font-size:9px;background:rgba(0,0,0,.3);color:#fff;border-radius:4px;padding:2px 8px;font-weight:700">APP + iFOOD</span>
+        </div>
+        <span style="font-size:13px;font-weight:600;opacity:.85">Total: ${R(c.investment)}</span>
+      </div>
+
+      <!-- Sub-header: split de investimento -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;background:#0d0d0d;border-bottom:1px solid var(--border)">
+        <div style="padding:10px 24px;border-right:1px solid var(--border);display:flex;align-items:center;gap:10px">
+          <span class="badge-app">APP</span>
+          <span style="font-weight:700">${R(app.spend)}</span>
+          <span style="font-size:11px;color:var(--muted)">${c.investment>0?(app.spend/c.investment*100).toFixed(0):0}%</span>
+        </div>
+        <div style="padding:10px 24px;display:flex;align-items:center;gap:10px">
+          <span class="badge-ifood">iFOOD</span>
+          <span style="font-weight:700">${R(ifood.spend)}</span>
+          <span style="font-size:11px;color:var(--muted)">${c.investment>0?(ifood.spend/c.investment*100).toFixed(0):0}%</span>
+        </div>
+      </div>
+
+      <!-- Métricas lado a lado -->
+      <div class="duo" style="display:grid;grid-template-columns:1fr 1px 1fr">
+        <div style="padding:22px">${metricsBlock(app,"app",true)}</div>
+        <div class="duo-div" style="background:rgba(255,255,255,.06)"></div>
+        <div style="padding:22px">${metricsBlock(ifood,"ifood",true)}</div>
+      </div>
+
+      <!-- Comparação -->
+      <div class="cmp-wrap" style="background:#0d0d0d;border-top:1px solid var(--border);padding:16px 24px">
+        <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:12px">⚡ COMPARAÇÃO</div>
+        ${buildComparison(app,ifood)}
+      </div>
+
+      <!-- Criativos -->
+      ${creativosSection(c)}
+    </div>`;
+  }
+
+  // ── Campanha canal único ──
+  const m   =hasApp?app:ifood;
+  const type=hasApp?"app":"ifood";
+  const thumbs=hasApp?c.thumbsApp:c.thumbsIfood;
+
+  return`
+    <div class="card campaign-card fu" data-key="${groupKey(base)}" style="overflow:hidden;animation-delay:${i*.06}s">
+      <div style="background:${color};padding:14px 24px;display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-weight:900;font-size:16px;letter-spacing:.5px">${base}</span>
+          ${hasApp?`<span class="badge-app">APP</span>`:`<span class="badge-ifood">iFOOD</span>`}
+        </div>
+        <span style="font-size:13px;font-weight:600;opacity:.85">Investido: ${R(c.investment)}</span>
+      </div>
+      <div style="padding:22px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 48px">
+          ${metricsRows(m,type)}
+        </div>
+        ${thumbs.length?`
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.05)">
+            <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:10px">CRIATIVOS ATIVOS (${thumbs.length})</div>
+            <div class="cg">${thumbs.map(t=>`<div><img class="thumb" src="${t.url}" alt="${t.adName}" onclick="openLb('${t.url}','${esc(t.adName)}')"/><div class="tname">${t.adName}</div></div>`).join("")}</div>
+          </div>`
+        :`<div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.04);font-size:12px;color:#2a2a2a">Nenhum criativo ativo.</div>`}
+      </div>
+    </div>`;
+}
+
+// Bloco de métricas com badge e número destacado (para duo)
+function metricsBlock(m, type, showBadge){
+  const isApp=type==="app";
+  const badge=isApp?`<span class="badge-app">APP</span>`:`<span class="badge-ifood">iFOOD</span>`;
+  const mainN=isApp?m.purchases:m.linkClicks;
+  const mainL=isApp?"COMPRAS":"CLIQUES NO LINK";
+  const mainC=isApp?"var(--app)":"var(--ifood)";
+  return`
+    ${showBadge?`<div style="margin-bottom:14px">${badge}</div>`:""}
+    <div style="font-size:32px;font-weight:900;color:${mainC};line-height:1">${N(mainN)}</div>
+    <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin:3px 0 16px">${mainL}</div>
+    ${metricsRows(m,type)}`;
+}
+
+// Linhas de métricas (grid 1 col, usado dentro do bloco)
+function metricsRows(m, type){
+  const isApp=type==="app";
+  const rows=isApp
+    ?[["CPL",           m.cpl>0?R(m.cpl):"—"],
+      ["Valor investido",R(m.spend)],
+      ["Cliques",       N(m.clicks)],
+      ["Impressões",    N(m.impressions)],
+      ["Alcance",       N(m.reach)],
+      ["CPM",           R(m.cpm)],
+      ["CTR",           m.ctr.toFixed(2)+"%"],
+      ["Frequência",    m.frequency>0?m.frequency.toFixed(2):"—"],
+      ["ROAS",          m.roas>0?m.roas.toFixed(2)+"x":"—"]]
+    :[["CPC Link",      m.cpcLink>0?R(m.cpcLink):"—"],
+      ["Valor investido",R(m.spend)],
+      ["Cliques",       N(m.clicks)],
+      ["Impressões",    N(m.impressions)],
+      ["Alcance",       N(m.reach)],
+      ["CPM",           R(m.cpm)],
+      ["CTR",           m.ctr.toFixed(2)+"%"],
+      ["Frequência",    m.frequency>0?m.frequency.toFixed(2):"—"]];
+  return rows.map(([l,v])=>`<div class="mrow"><span class="mlabel">${l}</span><span class="mval">${v}</span></div>`).join("");
+}
+
+// Seção de comparação
+function buildComparison(a, b){
+  // retorna ["win","lose"] ou ["lose","win"] ou ["",""]
+  const w=(av,bv,lower=false)=>{
+    if(!av&&!bv)return["",""];if(!av)return["lose","win"];if(!bv)return["win","lose"];
+    return lower?(av<bv?["win","lose"]:av>bv?["lose","win"]:["",""])
+                :(av>bv?["win","lose"]:av<bv?["lose","win"]:["",""]);
+  };
+  const rows=[
+    {l:"Investimento",   av:R(a.spend),            bv:R(b.spend),            wn:w(a.spend,b.spend)},
+    {l:"Compras / Clicks",av:N(a.purchases),        bv:N(b.linkClicks),       wn:w(a.purchases,b.linkClicks)},
+    {l:"CPL / CPC Link", av:a.cpl>0?R(a.cpl):"—",  bv:b.cpcLink>0?R(b.cpcLink):"—",wn:w(a.cpl||Infinity,b.cpcLink||Infinity,true)},
+    {l:"CTR",            av:a.ctr.toFixed(2)+"%",   bv:b.ctr.toFixed(2)+"%",  wn:w(a.ctr,b.ctr)},
+    {l:"CPM",            av:R(a.cpm),               bv:R(b.cpm),              wn:w(a.cpm,b.cpm,true)},
+    {l:"Impressões",     av:N(a.impressions),        bv:N(b.impressions),      wn:w(a.impressions,b.impressions)},
+    {l:"Frequência",     av:a.frequency>0?a.frequency.toFixed(2):"—",bv:b.frequency>0?b.frequency.toFixed(2):"—",wn:["",""]},
+  ];
+  return`
+    ${rows.map(r=>`
+      <div class="cmp-row">
+        <div class="cmp-a"><span class="${r.wn[0]}">${r.av}</span></div>
+        <div class="cmp-lbl">${r.l}</div>
+        <div class="cmp-b"><span class="${r.wn[1]}">${r.bv}</span></div>
+      </div>`).join("")}
+    <div style="margin-top:10px;display:flex;gap:16px;font-size:10px">
+      <span style="color:var(--app);font-weight:700">● Melhor</span>
+      <span style="color:#374151">● Pior</span>
+    </div>`;
+}
+
+// Seção de criativos (para campanhas com ambos)
+function creativosSection(c){
+  const haA=c.thumbsApp.length>0, haI=c.thumbsIfood.length>0;
+  if(!haA&&!haI) return`<div style="padding:14px 24px;border-top:1px solid var(--border);font-size:12px;color:#2a2a2a">Nenhum criativo ativo encontrado.</div>`;
+  return`
+    <div style="border-top:1px solid var(--border);padding:20px 24px">
+      <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:16px">🎨 CRIATIVOS ATIVOS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div>
+          <div style="font-size:10px;color:var(--app);font-weight:700;letter-spacing:.5px;margin-bottom:8px">APP (${c.thumbsApp.length})</div>
+          ${haA?`<div class="cg">${c.thumbsApp.map(t=>`<div><img class="thumb" src="${t.url}" alt="${t.adName}" onclick="openLb('${t.url}','${esc(t.adName)}')"/><div class="tname">${t.adName}</div></div>`).join("")}</div>`:`<div style="font-size:12px;color:#2a2a2a">—</div>`}
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--ifood);font-weight:700;letter-spacing:.5px;margin-bottom:8px">iFOOD (${c.thumbsIfood.length})</div>
+          ${haI?`<div class="cg">${c.thumbsIfood.map(t=>`<div><img class="thumb" src="${t.url}" alt="${t.adName}" onclick="openLb('${t.url}','${esc(t.adName)}')"/><div class="tname">${t.adName}</div></div>`).join("")}</div>`:`<div style="font-size:12px;color:#2a2a2a">—</div>`}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+//  CHARTS
+// ══════════════════════════════════════════
+function buildCharts(data){
+  Object.values(CHARTS).forEach(c=>c.destroy());CHARTS={};
+  const C=data.campaigns,labels=C.map(c=>c.base),colors=C.map(c=>c.color);
+  const bar=document.getElementById("chartBar");
+  if(bar)CHARTS.bar=new Chart(bar,{type:"bar",
+    data:{labels,datasets:[
+      {label:"App",  data:C.map(c=>+c.app.spend.toFixed(2)),  backgroundColor:"#22c55e",borderRadius:4},
+      {label:"iFood",data:C.map(c=>+c.ifood.spend.toFixed(2)),backgroundColor:"#ec4899",borderRadius:4},
+    ]},
+    options:{responsive:true,plugins:{legend:{labels:{color:"#9ca3af",font:{size:11},padding:14}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${R(ctx.raw)}`}}},
+    scales:{x:{stacked:true,ticks:{color:"#555",font:{size:10}},grid:{color:"#1a1a1a"}},y:{stacked:true,ticks:{color:"#555",font:{size:10},callback:v=>"R$"+N(v)},grid:{color:"#1a1a1a"}}}}});
+  const dnt=document.getElementById("chartDonut");
+  if(dnt)CHARTS.donut=new Chart(dnt,{type:"doughnut",
+    data:{labels,datasets:[{data:C.map(c=>+c.investment.toFixed(2)),backgroundColor:colors,borderColor:"#111",borderWidth:3}]},
+    options:{responsive:true,cutout:"62%",plugins:{legend:{position:"right",labels:{color:"#9ca3af",font:{size:11},padding:12}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${R(ctx.raw)} (${C[ctx.dataIndex].pct.toFixed(1)}%)`}}}}});
+}
+
+// ══════════════════════════════════════════
+//  FILTER / LIGHTBOX / HELPERS
+// ══════════════════════════════════════════
+function filterC(base,btn){
+  document.querySelectorAll(".ctab").forEach(b=>{b.classList.remove("active");b.style.color="";});
+  btn.classList.add("active");
+  document.querySelectorAll(".campaign-card").forEach(el=>{
+    el.style.display=(base==="all"||el.dataset.key===base)?"block":"none";
+  });
+}
+
+function openLb(url,name){document.getElementById("lbImg").src=url;document.getElementById("lbN").textContent=name;document.getElementById("lb").classList.remove("hidden");}
+function closeLb(){document.getElementById("lb").classList.add("hidden");}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeLb();});
+
+const esc=s=>(s||"").replace(/'/g,"\\'").replace(/"/g,"&quot;");
+function R(v){return"R$ "+parseFloat(v||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function N(v){v=+v||0;if(v>=1e6)return(v/1e6).toFixed(1)+"M";if(v>=1e3)return(v/1e3).toFixed(0)+"K";return v.toLocaleString("pt-BR");}
+function DD(s){const[y,m,d]=s.split("-");return`${d}/${m}/${y}`;}
+function periodLabel(s,u){
+  const MN=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+  const d0=new Date(s+"T00:00:00Z"),d1=new Date(u+"T00:00:00Z");
+  if(d0.getUTCMonth()===d1.getUTCMonth()&&d0.getUTCFullYear()===d1.getUTCFullYear())
+    return MN[d0.getUTCMonth()].toUpperCase()+" "+d0.getUTCFullYear();
+  return MN[d0.getUTCMonth()]+" – "+MN[d1.getUTCMonth()]+" "+d1.getUTCFullYear();
+}
+</script>
+</body>
+</html>
