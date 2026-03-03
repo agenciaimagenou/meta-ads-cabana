@@ -374,6 +374,7 @@ function updateDropOpts(){
 function pickPreset(p){
   setPreset(p);
   closeDateDrop();
+  run();
 }
 
 function setPreset(p){
@@ -396,6 +397,7 @@ function applyCustomRange(){
   updateDropOpts();
   updateTriggerLabel(DD(s)+" → "+DD(e));
   closeDateDrop();
+  run();
 }
 
 function preset(p){
