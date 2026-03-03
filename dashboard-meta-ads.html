@@ -625,6 +625,36 @@ function groupKey(base){
   return base.toLowerCase().replace(/\s+/g," ").trim();
 }
 
+// Remove marcadores de objetivo/fase ([CONVERSÃO],[TRÁFEGO],[R],[I], etc.) para obter a "chave de produto"
+function productKey(base){
+  return base
+    .replace(/\[[^\]]*\]/g,"")   // strip [CONVERSÃO], [R], [I], etc.
+    .replace(/\s{2,}/g," ")
+    .trim();
+}
+
+// Agrupa campanhas cujo productKey é idêntico (ex: TRUFFLE [CONVERSÃO] + TRUFFLE [TRÁFEGO] → TRUFFLE)
+function groupByProduct(C){
+  const map={};
+  C.forEach(c=>{
+    const pk=productKey(c.base);
+    const nk=pk.toLowerCase().replace(/\s+/g," ").trim();
+    if(!nk)return;
+    if(!map[nk]){
+      map[nk]={name:pk,campaigns:[],spend:0,purchases:0,clicks:0,linkClicks:0,impressions:0,color:c.color};
+    }
+    map[nk].campaigns.push(c);
+    map[nk].spend      +=(c.app.spend+c.ifood.spend);
+    map[nk].purchases  +=c.app.purchases;
+    map[nk].clicks     +=(c.app.clicks+c.ifood.clicks);
+    map[nk].linkClicks +=c.ifood.linkClicks;
+    map[nk].impressions+=(c.app.impressions+c.ifood.impressions);
+  });
+  return Object.values(map)
+    .filter(g=>g.campaigns.length>=2)
+    .sort((a,b)=>b.spend-a.spend);
+}
+
 function blank(){return{spend:0,impressions:0,clicks:0,reach:0,linkClicks:0,
   purchases:0,cpl:0,cpm:0,ctr:0,cpcLink:0,roas:0,frequency:0,
   _act:{},_roasSum:0,_roasW:0,_freqSum:0,_freqDays:0,campaignIds:[]};}
@@ -860,6 +890,24 @@ function budgetInnerHTML(C, total){
       <span></span>
     </div>`;}
 
+function productSectionHTML(C){
+  const groups=groupByProduct(C);
+  if(!groups.length)return"";
+  return`
+    <div class="section-title"><span>Consolidado por Produto</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px">
+      ${groups.map(g=>`
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid ${g.color};border-radius:12px;padding:16px">
+          <div style="font-weight:800;font-size:13px;letter-spacing:.3px;color:#0f172a;margin-bottom:4px;text-transform:uppercase">${g.name}</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:12px">${g.campaigns.length} variações de campanha</div>
+          <div class="mrow"><span class="mlabel">Investimento</span><span class="mval" style="color:var(--app)">${R(g.spend)}</span></div>
+          <div class="mrow"><span class="mlabel">Compras (App)</span><span class="mval">${N(g.purchases)}</span></div>
+          <div class="mrow"><span class="mlabel">Cliques iFOOD</span><span class="mval">${N(g.linkClicks)}</span></div>
+          <div class="mrow" style="border-bottom:none"><span class="mlabel">Total Cliques</span><span class="mval">${N(g.clicks)}</span></div>
+        </div>`).join("")}
+    </div>`;
+}
+
 function render(data){
   lastData=data;
   const C=data.campaigns;
@@ -891,6 +939,9 @@ function render(data){
     <div id="kpiSection" class="kpi-grid fu" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px">
       ${kpiHTML(C,data.total)}
     </div>
+
+    <!-- Consolidado por Produto -->
+    ${(()=>{const ps=productSectionHTML(C);return ps?`<div id="productSection" class="card fu" style="padding:24px;margin-bottom:24px">${ps}</div>`:`<div id="productSection"></div>`;})()}
 
     <!-- Divisão de Verba -->
     <div id="budgetSection" class="card" style="padding:24px;margin-bottom:24px">
@@ -1245,6 +1296,9 @@ function updateCampaignFilter(){
   // update KPI grid
   const ks=document.getElementById("kpiSection");
   if(ks) ks.innerHTML=kpiHTML(FCp,filteredTotal);
+  // update product section
+  const psel=document.getElementById("productSection");
+  if(psel){const ps=productSectionHTML(FCp);psel.innerHTML=ps;}
   // update budget table
   const bs=document.getElementById("budgetSection");
   if(bs)bs.innerHTML=budgetInnerHTML(FCp,filteredTotal);
