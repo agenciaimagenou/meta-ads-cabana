@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/dashboard-meta-ads.html" }
+  ]
+}
