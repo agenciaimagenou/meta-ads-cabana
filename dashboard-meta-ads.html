@@ -316,7 +316,7 @@ const KPI_META={
   linkClicks: {lbl:"Cliques iFood", clr:"#ef4444",fmt:v=>N(v)},
   clicks:     {lbl:"Total Cliques", clr:"#3b82f6",fmt:v=>N(v)},
   impressions:{lbl:"Impressões",    clr:"#8b5cf6",fmt:v=>N(v)},
-  ctr:        {lbl:"CTR Médio",     clr:"#f59e0b",fmt:v=>parseFloat(v||0).toFixed(2)+"%"},
+  cpc:        {lbl:"CPC",           clr:"#f59e0b",fmt:v=>R(v)},
 };
 
 // ══════════════════════════════════════════
@@ -817,9 +817,9 @@ function kpiHTML(C, total){
   const totC=C.reduce((s,c)=>s+c.app.clicks+c.ifood.clicks,0);
   const totI=C.reduce((s,c)=>s+c.app.impressions+c.ifood.impressions,0);
   const totL=C.reduce((s,c)=>s+c.ifood.linkClicks,0);
-  const avgCTR=C.length?C.reduce((s,c)=>s+c.app.ctr,0)/C.length:0;
-  const vals={spend:total,purchases:totP,linkClicks:totL,clicks:totC,impressions:totI,ctr:avgCTR};
-  const subs={spend:C.length+" campanhas",purchases:"conversões",linkClicks:"link clicks",clicks:"todos os canais",impressions:"total",ctr:"taxa de clique"};
+  const avgCPC=totC>0?total/totC:0;
+  const vals={spend:total,purchases:totP,linkClicks:totL,clicks:totC,impressions:totI,cpc:avgCPC};
+  const subs={spend:C.length+" campanhas",purchases:"conversões",linkClicks:"link clicks",clicks:"todos os canais",impressions:"total",cpc:"custo por clique"};
   return Object.entries(KPI_META).map(([metric,cfg])=>`
     <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e2e8f0;border-left:3px solid ${cfg.clr};border-radius:10px;padding:10px 14px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
       <div style="flex:1;min-width:0">
