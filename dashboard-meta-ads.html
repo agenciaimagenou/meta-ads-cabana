@@ -625,20 +625,30 @@ function groupKey(base){
   return base.toLowerCase().replace(/\s+/g," ").trim();
 }
 
-// Remove marcadores de objetivo/fase ([CONVERSÃO],[TRÁFEGO],[R],[I], etc.) para obter a "chave de produto"
+// Extrai o nome do produto de nomes no formato "[R] [BISCOFF] [CONVERSÃO]"
+// Remove [R]/[I] e tags de objetivo, desencapsula os colchetes restantes
+// Ex: "[R] [BISCOFF] [CONVERSÃO]"          → "BISCOFF"
+// Ex: "[I] [LOJA RIBEIRAO PRETO] [SAZONAL] [TRÁFEGO]" → "LOJA RIBEIRAO PRETO SAZONAL"
 function productKey(base){
   return base
-    .replace(/\[[^\]]*\]/g,"")   // strip [CONVERSÃO], [R], [I], etc.
+    .replace(/\[\s*[RI]\s*\]/gi,"")
+    .replace(/\[\s*(CONVERSÃO|CONVERSAO|TRÁFEGO|TRAFEGO|ALCANCE|AWARENESS|REMARKETING|PROSPECTING|RETARGETING)\s*\]/gi,"")
+    .replace(/\[([^\]]+)\]/g,"$1")   // desencapsula colchetes restantes → conteúdo
     .replace(/\s{2,}/g," ")
     .trim();
 }
 
-// Agrupa campanhas cujo productKey é idêntico (ex: TRUFFLE [CONVERSÃO] + TRUFFLE [TRÁFEGO] → TRUFFLE)
+// Chave normalizada sem acentos para comparação
+function productNorm(pk){
+  return pk.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\s+/g," ").trim();
+}
+
+// Agrupa campanhas pelo productKey (ex: BISCOFF [CONVERSÃO] + BISCOFF [TRÁFEGO] → BISCOFF)
 function groupByProduct(C){
   const map={};
   C.forEach(c=>{
     const pk=productKey(c.base);
-    const nk=pk.toLowerCase().replace(/\s+/g," ").trim();
+    const nk=productNorm(pk);
     if(!nk)return;
     if(!map[nk]){
       map[nk]={name:pk,campaigns:[],spend:0,purchases:0,clicks:0,linkClicks:0,impressions:0,color:c.color};
