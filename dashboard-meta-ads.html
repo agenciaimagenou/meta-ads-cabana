@@ -1135,9 +1135,9 @@ function metricsRows(m, type){
   const resultVal =isApp?m.purchases:m.linkClicks;
   const resultLbl =isApp?"Resultado (Compras)":"Resultado (Cliques link)";
   const resultClr =isApp?"var(--app)":"var(--ifood)";
-  const resultRow =`<div class="mrow" style="border-bottom:2px solid ${resultClr};margin-bottom:4px">
-    <span class="mlabel" style="font-weight:700;color:${resultClr}">${resultLbl}</span>
-    <span class="mval" style="color:${resultClr};font-size:15px">${N(resultVal)}</span>
+  const resultRow =`<div class="mrow">
+    <span class="mlabel" style="color:${resultClr}">${resultLbl}</span>
+    <span class="mval" style="color:${resultClr}">${N(resultVal)}</span>
   </div>`;
   const rows=isApp
     ?[["CPL",           m.cpl>0?R(m.cpl):"—"],
