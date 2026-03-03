@@ -649,6 +649,8 @@ function productNorm(pk){
 }
 
 // Agrupa campanhas pelo productKey (ex: BISCOFF [CONVERSÃO] + BISCOFF [TRÁFEGO] → BISCOFF)
+// Também mescla subgrupos cujo nome é extensão de um grupo pai
+// (ex: "LOJA RIBEIRAO PRETO SAZONAL" → absorvido por "LOJA RIBEIRAO PRETO")
 function groupByProduct(C){
   const map={};
   C.forEach(c=>{
@@ -664,6 +666,19 @@ function groupByProduct(C){
     map[nk].clicks     +=(c.app.clicks+c.ifood.clicks);
     map[nk].linkClicks +=c.ifood.linkClicks;
     map[nk].impressions+=(c.app.impressions+c.ifood.impressions);
+  });
+  // Mescla chave filha na chave pai quando filho começa com "pai "
+  const keys=Object.keys(map).sort((a,b)=>a.length-b.length); // mais curtos primeiro
+  keys.forEach(parent=>{
+    keys.forEach(child=>{
+      if(child!==parent && map[child] && map[parent] && child.startsWith(parent+" ")){
+        const p=map[parent],ch=map[child];
+        ch.campaigns.forEach(camp=>p.campaigns.push(camp));
+        p.spend+=ch.spend; p.purchases+=ch.purchases;
+        p.clicks+=ch.clicks; p.linkClicks+=ch.linkClicks; p.impressions+=ch.impressions;
+        delete map[child];
+      }
+    });
   });
   return Object.values(map)
     .filter(g=>g.campaigns.length>=2)
