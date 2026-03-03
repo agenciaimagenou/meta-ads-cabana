@@ -881,15 +881,19 @@ function budgetInnerHTML(C, total){
   const groups=groupByProduct(C);
   const prodContent=groups.length
     ?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">
-        ${groups.map(g=>`
+        ${groups.map(g=>{const pct=total>0?g.spend/total*100:0;return`
           <div style="background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid ${g.color};border-radius:12px;padding:16px">
-            <div style="font-weight:800;font-size:13px;letter-spacing:.3px;color:#0f172a;margin-bottom:3px;text-transform:uppercase">${g.name}</div>
-            <div style="font-size:11px;color:var(--muted);margin-bottom:12px">${g.campaigns.length} variações de campanha</div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px">
+              <div style="font-weight:800;font-size:13px;letter-spacing:.3px;color:#0f172a;text-transform:uppercase">${g.name}</div>
+              <div style="font-size:13px;font-weight:900;color:${g.color};margin-left:8px;white-space:nowrap">${pct.toFixed(1)}%</div>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:10px">${g.campaigns.length} variações de campanha</div>
+            <div class="bbar" style="margin-bottom:12px"><div class="bbar-fill" style="width:${pct}%;background:${g.color}"></div></div>
             <div class="mrow"><span class="mlabel">Investimento</span><span class="mval" style="color:var(--app)">${R(g.spend)}</span></div>
             <div class="mrow"><span class="mlabel">Compras (App)</span><span class="mval">${N(g.purchases)}</span></div>
             <div class="mrow"><span class="mlabel">Cliques iFOOD</span><span class="mval">${N(g.linkClicks)}</span></div>
             <div class="mrow" style="border-bottom:none"><span class="mlabel">Total Cliques</span><span class="mval">${N(g.clicks)}</span></div>
-          </div>`).join("")}
+          </div>`}).join("")}
       </div>`
     :`<div style="color:var(--muted);font-size:13px;padding:24px 0;text-align:center">Nenhum produto com múltiplas variações encontrado.</div>`;
 
