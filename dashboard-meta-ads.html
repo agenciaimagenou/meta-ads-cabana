@@ -1132,6 +1132,13 @@ function metricsBlock(m, type, showBadge){
 // Linhas de métricas (grid 1 col, usado dentro do bloco)
 function metricsRows(m, type){
   const isApp=type==="app";
+  const resultVal =isApp?m.purchases:m.linkClicks;
+  const resultLbl =isApp?"Resultado (Compras)":"Resultado (Cliques link)";
+  const resultClr =isApp?"var(--app)":"var(--ifood)";
+  const resultRow =`<div class="mrow" style="border-bottom:2px solid ${resultClr};margin-bottom:4px">
+    <span class="mlabel" style="font-weight:700;color:${resultClr}">${resultLbl}</span>
+    <span class="mval" style="color:${resultClr};font-size:15px">${N(resultVal)}</span>
+  </div>`;
   const rows=isApp
     ?[["CPL",           m.cpl>0?R(m.cpl):"—"],
       ["Valor investido",R(m.spend)],
@@ -1150,7 +1157,7 @@ function metricsRows(m, type){
       ["CPM",           R(m.cpm)],
       ["CTR",           m.ctr.toFixed(2)+"%"],
       ["Frequência",    m.frequency>0?m.frequency.toFixed(2):"—"]];
-  return rows.map(([l,v])=>`<div class="mrow"><span class="mlabel">${l}</span><span class="mval">${v}</span></div>`).join("");
+  return resultRow+rows.map(([l,v])=>`<div class="mrow"><span class="mlabel">${l}</span><span class="mval">${v}</span></div>`).join("");
 }
 
 // Seção de comparação
