@@ -54,6 +54,11 @@ label{font-size:12px;color:var(--muted2);font-weight:600;display:block;margin-bo
 .modal{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.15)}
 .hidden{display:none!important}
 
+/* budget tabs */
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-weight:600;font-size:13px;padding:8px 18px 10px;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:-1px;transition:color .15s,border-color .15s;white-space:nowrap}
+.tab-btn.active{border-bottom-color:var(--app);color:#0f172a;font-weight:700}
+.tab-btn:hover:not(.active){color:var(--muted2)}
+
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .fu{animation:fadeUp .3s ease forwards}
 @keyframes sh{0%{background-position:200%}100%{background-position:-200%}}
@@ -873,49 +878,72 @@ function kpiHTML(C, total){
 }
 
 function budgetInnerHTML(C, total){
-  return`
-    <div class="section-title"><span>Divisão de Verba</span></div>
-    <div class="budget-grid" style="display:grid;grid-template-columns:1fr 130px 58px 220px;gap:14px;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--border);font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.6px;text-transform:uppercase">
-      <span>Campanha</span><span>Investido</span><span>%</span><span class="budget-bar">Distribuição</span>
-    </div>
-    ${C.map(c=>`
-      <div class="budget-grid" style="display:grid;grid-template-columns:1fr 130px 58px 220px;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.05);transition:background .15s;border-radius:4px">
-        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
-          <span style="width:10px;height:10px;border-radius:3px;background:${c.color};flex-shrink:0"></span>
-          <span style="font-weight:600;font-size:13px">${c.base}</span>
-          ${c.both
-            ?`<span style="font-size:9px;background:rgba(22,163,74,.1);color:var(--app);border:1px solid rgba(22,163,74,.3);border-radius:5px;padding:2px 7px;font-weight:700;letter-spacing:.3px">APP + iFOOD</span>`
-            :c.hasApp
-              ?`<span style="font-size:9px;background:rgba(22,163,74,.1);color:var(--app);border:1px solid rgba(22,163,74,.3);border-radius:5px;padding:2px 7px;font-weight:700;letter-spacing:.3px">APP</span>`
-              :`<span style="font-size:9px;background:rgba(220,38,38,.08);color:var(--ifood);border:1px solid rgba(220,38,38,.25);border-radius:5px;padding:2px 7px;font-weight:700;letter-spacing:.3px">iFOOD</span>`}
-        </div>
-        <div style="font-size:14px;font-weight:700">${R(c.investment)}</div>
-        <div style="font-size:12px;color:var(--muted2);font-weight:600">${c.pct.toFixed(1)}%</div>
-        <div class="budget-bar"><div class="bbar" style="height:6px"><div class="bbar-fill" style="width:${c.pct}%;background:${c.color}"></div></div></div>
-      </div>`).join("")}
-    <div class="budget-grid" style="display:grid;grid-template-columns:1fr 130px 58px 220px;gap:14px;padding:14px 0 2px;border-top:1px solid var(--border);margin-top:4px">
-      <span style="font-weight:800;font-size:13px;color:var(--muted2)">TOTAL</span>
-      <span style="font-weight:900;font-size:15px;color:var(--app)">${R(total)}</span>
-      <span style="font-weight:700;font-size:13px">100%</span>
-      <span></span>
-    </div>`;}
-
-function productSectionHTML(C){
   const groups=groupByProduct(C);
-  if(!groups.length)return"";
+  const prodContent=groups.length
+    ?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">
+        ${groups.map(g=>`
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid ${g.color};border-radius:12px;padding:16px">
+            <div style="font-weight:800;font-size:13px;letter-spacing:.3px;color:#0f172a;margin-bottom:3px;text-transform:uppercase">${g.name}</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:12px">${g.campaigns.length} variações de campanha</div>
+            <div class="mrow"><span class="mlabel">Investimento</span><span class="mval" style="color:var(--app)">${R(g.spend)}</span></div>
+            <div class="mrow"><span class="mlabel">Compras (App)</span><span class="mval">${N(g.purchases)}</span></div>
+            <div class="mrow"><span class="mlabel">Cliques iFOOD</span><span class="mval">${N(g.linkClicks)}</span></div>
+            <div class="mrow" style="border-bottom:none"><span class="mlabel">Total Cliques</span><span class="mval">${N(g.clicks)}</span></div>
+          </div>`).join("")}
+      </div>`
+    :`<div style="color:var(--muted);font-size:13px;padding:24px 0;text-align:center">Nenhum produto com múltiplas variações encontrado.</div>`;
+
   return`
-    <div class="section-title"><span>Consolidado por Produto</span></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px">
-      ${groups.map(g=>`
-        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid ${g.color};border-radius:12px;padding:16px">
-          <div style="font-weight:800;font-size:13px;letter-spacing:.3px;color:#0f172a;margin-bottom:4px;text-transform:uppercase">${g.name}</div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:12px">${g.campaigns.length} variações de campanha</div>
-          <div class="mrow"><span class="mlabel">Investimento</span><span class="mval" style="color:var(--app)">${R(g.spend)}</span></div>
-          <div class="mrow"><span class="mlabel">Compras (App)</span><span class="mval">${N(g.purchases)}</span></div>
-          <div class="mrow"><span class="mlabel">Cliques iFOOD</span><span class="mval">${N(g.linkClicks)}</span></div>
-          <div class="mrow" style="border-bottom:none"><span class="mlabel">Total Cliques</span><span class="mval">${N(g.clicks)}</span></div>
+    <!-- Tab bar -->
+    <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px">
+      <button class="tab-btn active" id="tabBtnBudget" onclick="switchBudgetTab('budget')">Divisão de Verba</button>
+      <button class="tab-btn" id="tabBtnProduto" onclick="switchBudgetTab('produto')">Consolidado por Produto</button>
+    </div>
+
+    <!-- Tab: Divisão de Verba -->
+    <div id="tabBudget">
+      <div class="budget-grid" style="display:grid;grid-template-columns:1fr 130px 58px 220px;gap:14px;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--border);font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.6px;text-transform:uppercase">
+        <span>Campanha</span><span>Investido</span><span>%</span><span class="budget-bar">Distribuição</span>
+      </div>
+      ${C.map(c=>`
+        <div class="budget-grid" style="display:grid;grid-template-columns:1fr 130px 58px 220px;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.05);transition:background .15s;border-radius:4px">
+          <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+            <span style="width:10px;height:10px;border-radius:3px;background:${c.color};flex-shrink:0"></span>
+            <span style="font-weight:600;font-size:13px">${c.base}</span>
+            ${c.both
+              ?`<span style="font-size:9px;background:rgba(22,163,74,.1);color:var(--app);border:1px solid rgba(22,163,74,.3);border-radius:5px;padding:2px 7px;font-weight:700;letter-spacing:.3px">APP + iFOOD</span>`
+              :c.hasApp
+                ?`<span style="font-size:9px;background:rgba(22,163,74,.1);color:var(--app);border:1px solid rgba(22,163,74,.3);border-radius:5px;padding:2px 7px;font-weight:700;letter-spacing:.3px">APP</span>`
+                :`<span style="font-size:9px;background:rgba(220,38,38,.08);color:var(--ifood);border:1px solid rgba(220,38,38,.25);border-radius:5px;padding:2px 7px;font-weight:700;letter-spacing:.3px">iFOOD</span>`}
+          </div>
+          <div style="font-size:14px;font-weight:700">${R(c.investment)}</div>
+          <div style="font-size:12px;color:var(--muted2);font-weight:600">${c.pct.toFixed(1)}%</div>
+          <div class="budget-bar"><div class="bbar" style="height:6px"><div class="bbar-fill" style="width:${c.pct}%;background:${c.color}"></div></div></div>
         </div>`).join("")}
+      <div class="budget-grid" style="display:grid;grid-template-columns:1fr 130px 58px 220px;gap:14px;padding:14px 0 2px;border-top:1px solid var(--border);margin-top:4px">
+        <span style="font-weight:800;font-size:13px;color:var(--muted2)">TOTAL</span>
+        <span style="font-weight:900;font-size:15px;color:var(--app)">${R(total)}</span>
+        <span style="font-weight:700;font-size:13px">100%</span>
+        <span></span>
+      </div>
+    </div>
+
+    <!-- Tab: Consolidado por Produto -->
+    <div id="tabProduto" style="display:none">
+      ${prodContent}
     </div>`;
+}
+
+function switchBudgetTab(tab){
+  const isBudget=tab==="budget";
+  const tB=document.getElementById("tabBudget");
+  const tP=document.getElementById("tabProduto");
+  const bB=document.getElementById("tabBtnBudget");
+  const bP=document.getElementById("tabBtnProduto");
+  if(tB)tB.style.display=isBudget?"":"none";
+  if(tP)tP.style.display=isBudget?"none":"";
+  if(bB){bB.classList.toggle("active",isBudget);}
+  if(bP){bP.classList.toggle("active",!isBudget);}
 }
 
 function render(data){
@@ -949,9 +977,6 @@ function render(data){
     <div id="kpiSection" class="kpi-grid fu" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px">
       ${kpiHTML(C,data.total)}
     </div>
-
-    <!-- Consolidado por Produto -->
-    ${(()=>{const ps=productSectionHTML(C);return ps?`<div id="productSection" class="card fu" style="padding:24px;margin-bottom:24px">${ps}</div>`:`<div id="productSection"></div>`;})()}
 
     <!-- Divisão de Verba -->
     <div id="budgetSection" class="card" style="padding:24px;margin-bottom:24px">
@@ -1306,9 +1331,6 @@ function updateCampaignFilter(){
   // update KPI grid
   const ks=document.getElementById("kpiSection");
   if(ks) ks.innerHTML=kpiHTML(FCp,filteredTotal);
-  // update product section
-  const psel=document.getElementById("productSection");
-  if(psel){const ps=productSectionHTML(FCp);psel.innerHTML=ps;}
   // update budget table
   const bs=document.getElementById("budgetSection");
   if(bs)bs.innerHTML=budgetInnerHTML(FCp,filteredTotal);
