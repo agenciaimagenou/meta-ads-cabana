@@ -1011,13 +1011,14 @@ function weeklySectionHTML(c,i){
   if(!weeks.length)return"";
   const{hasApp,hasIfood,both}=c;
   const cols=[];
+  const NX=v=>(+v||0).toLocaleString("pt-BR");
   if(hasIfood||both){
-    cols.push({lbl:"Cliques no Link",clr:"var(--ifood)",fn:w=>N(w.ifood.linkClicks)});
-    cols.push({lbl:"Cliques Todos iFOOD",clr:"var(--muted2)",fn:w=>N(w.ifood.clicks)});
+    cols.push({lbl:"Cliques no Link",clr:"var(--ifood)",fn:w=>NX(w.ifood.linkClicks)});
+    cols.push({lbl:"Cliques Todos iFOOD",clr:"var(--muted2)",fn:w=>NX(w.ifood.clicks)});
   }
   if(hasApp||both){
-    cols.push({lbl:"Resultado (Compras)",clr:"var(--app)",fn:w=>N(w.app.purchases)});
-    cols.push({lbl:"Cliques Todos APP",clr:"var(--muted2)",fn:w=>N(w.app.clicks)});
+    cols.push({lbl:"Resultado (Compras)",clr:"var(--app)",fn:w=>NX(w.app.purchases)});
+    cols.push({lbl:"Cliques Todos APP",clr:"var(--muted2)",fn:w=>NX(w.app.clicks)});
   }
   const rows=weeks.map(w=>`
     <tr>
