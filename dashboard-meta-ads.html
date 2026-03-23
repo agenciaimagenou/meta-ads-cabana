@@ -1051,18 +1051,20 @@ function buildWeeklyCharts(C){
     const weeks=getWeeklyForCamp(groupKey(camp.base));
     if(!weeks.length)return;
     const labels=weeks.map(w=>w.label.split(" a ")[0]);
+    const mkDs=(label,raw,clr)=>{
+      const maxV=Math.max(...raw,0.001);
+      return{label,_raw:raw,data:raw.map(v=>+(v/maxV*100).toFixed(1)),
+        borderColor:clr,backgroundColor:clr+"22",fill:true,tension:0.4,
+        pointRadius:2,pointHoverRadius:5,borderWidth:1.5};
+    };
     const datasets=[];
     if(camp.hasIfood||camp.both){
-      datasets.push({label:"Cliques no Link",data:weeks.map(w=>w.ifood.linkClicks),
-        borderColor:"#dc2626",backgroundColor:"rgba(220,38,38,.07)",fill:false,tension:0.3,pointRadius:3,borderWidth:2});
-      datasets.push({label:"Cliques Todos iFOOD",data:weeks.map(w=>w.ifood.clicks),
-        borderColor:"#f87171",backgroundColor:"rgba(248,113,113,.07)",fill:false,tension:0.3,pointRadius:3,borderWidth:2,borderDash:[4,3]});
+      datasets.push(mkDs("Cliques no Link",weeks.map(w=>w.ifood.linkClicks),"#ef4444"));
+      datasets.push(mkDs("Cliques Todos iFOOD",weeks.map(w=>w.ifood.clicks),"#f87171"));
     }
     if(camp.hasApp||camp.both){
-      datasets.push({label:"Compras (APP)",data:weeks.map(w=>w.app.purchases),
-        borderColor:"#16a34a",backgroundColor:"rgba(22,163,74,.07)",fill:false,tension:0.3,pointRadius:3,borderWidth:2});
-      datasets.push({label:"Cliques Todos APP",data:weeks.map(w=>w.app.clicks),
-        borderColor:"#4ade80",backgroundColor:"rgba(74,222,128,.07)",fill:false,tension:0.3,pointRadius:3,borderWidth:2,borderDash:[4,3]});
+      datasets.push(mkDs("Compras (APP)",weeks.map(w=>w.app.purchases),"#10b981"));
+      datasets.push(mkDs("Cliques Todos APP",weeks.map(w=>w.app.clicks),"#3b82f6"));
     }
     if(!datasets.length)return;
     CHARTS["weekly_"+i]=new Chart(el,{
@@ -1075,11 +1077,11 @@ function buildWeeklyCharts(C){
             labels:{color:"#64748b",font:{size:10},boxWidth:10,padding:8}},
           tooltip:{backgroundColor:"#fff",borderColor:"#e2e8f0",borderWidth:1,
             titleColor:"#64748b",bodyColor:"#0f172a",padding:8,
-            callbacks:{label:ctx=>` ${ctx.dataset.label}: ${(ctx.raw||0).toLocaleString("pt-BR")}`}}
+            callbacks:{label:ctx=>` ${ctx.dataset.label}: ${(ctx.dataset._raw[ctx.dataIndex]||0).toLocaleString("pt-BR")}`}}
         },
         scales:{
           x:{ticks:{color:"#94a3b8",font:{size:9},maxRotation:30},grid:{color:"#f1f5f9"}},
-          y:{beginAtZero:true,ticks:{color:"#94a3b8",font:{size:9},callback:v=>v.toLocaleString("pt-BR")},grid:{color:"#f1f5f9"}},
+          y:{min:0,max:100,ticks:{color:"#94a3b8",font:{size:9},callback:v=>v+"%"},grid:{color:"#f1f5f9"}},
         }
       }
     });
