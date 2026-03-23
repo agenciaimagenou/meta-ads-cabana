@@ -306,7 +306,7 @@ const FIELDS_INS=[
 const FIELDS_ADS="id,name,campaign{id,name},adset{id,name},status,creative{thumbnail_url,image_url}";
 
 const API="https://graph.facebook.com/v24.0";
-let CFG={},STATE={since:"",until:""},CHARTS={},fp,activePreset=null,lastData=null,monthlyRawRows=[];
+let CFG={},STATE={since:"",until:""},CHARTS={},fp,activePreset=null,lastData=null,monthlyRawRows=[],weeklyRawRows=[];
 
 // ── Multi-account ──
 const ACCOUNT_LIST=[
@@ -529,8 +529,9 @@ async function run(){
   if(!STATE.since||!STATE.until){alert("Selecione o período.");return;}
   setStatus("loading");renderLoading();
   try{
-    const[ins,ads,mon]=await Promise.all([fetchInsights(),fetchAds(),fetchMonthlyInsights()]);
+    const[ins,ads,mon,wkly]=await Promise.all([fetchInsights(),fetchAds(),fetchMonthlyInsights(),fetchWeeklyInsights()]);
     monthlyRawRows=tagMonthlyRows(mon);
+    weeklyRawRows=tagWeeklyRows(wkly);
     render(process(ins,ads));
     setStatus("ready");
   }catch(err){setStatus("error");renderErr(err);}
@@ -572,6 +573,19 @@ async function fetchMonthlyInsights(){
   });
   try{return await paginate(`${API}/${CFG.account}/insights?${p}`);}
   catch(e){console.warn("Monthly insights:",e.message);return[];}
+}
+
+async function fetchWeeklyInsights(){
+  const p=new URLSearchParams({
+    level:"campaign",
+    time_range:JSON.stringify({since:STATE.since,until:STATE.until}),
+    time_increment:"7",
+    fields:"campaign_name,date_start,date_stop,clicks,inline_link_clicks,actions",
+    filtering:JSON.stringify([{field:"campaign.effective_status",operator:"IN",value:["ACTIVE","PAUSED"]}]),
+    limit:"500",access_token:CFG.token,
+  });
+  try{return await paginate(`${API}/${CFG.account}/insights?${p}`);}
+  catch(e){console.warn("Weekly insights:",e.message);return[];}
 }
 
 async function paginate(url){
@@ -799,6 +813,33 @@ function tagMonthlyRows(rows){
   }));
 }
 
+function tagWeeklyRows(rows){
+  const appKw=(CFG.appKw||"APP").toUpperCase();
+  const ifoodKw=(CFG.ifoodKw||"IFOOD").toUpperCase();
+  return rows.map(r=>({
+    ...r,
+    _key:groupKey(baseName(r.campaign_name||"—",appKw,ifoodKw)),
+    _channel:getChannel(r.campaign_name||"—",appKw,ifoodKw),
+    _clicks:parseInt(r.clicks||0),
+    _linkClicks:parseInt(r.inline_link_clicks||0),
+    _purchases:parseFloat((r.actions||[]).find(a=>["purchase","offsite_conversion.fb_pixel_purchase","onsite_conversion.purchase"].includes(a.action_type))?.value||0),
+    _weekLabel:`${DD(r.date_start)} a ${DD(r.date_stop||r.date_start)}`,
+  }));
+}
+
+function getWeeklyForCamp(key){
+  const rows=weeklyRawRows.filter(r=>r._key===key);
+  const weekMap={};const weekOrder=[];
+  rows.forEach(r=>{
+    const wk=r._weekLabel;
+    if(!weekMap[wk]){weekMap[wk]={label:wk,ds:r.date_start,app:{clicks:0,purchases:0},ifood:{clicks:0,linkClicks:0}};weekOrder.push(wk);}
+    const w=weekMap[wk];
+    if(r._channel==="app"){w.app.clicks+=r._clicks;w.app.purchases+=r._purchases;}
+    else{w.ifood.clicks+=r._clicks;w.ifood.linkClicks+=r._linkClicks;}
+  });
+  return weekOrder.map(wk=>weekMap[wk]).sort((a,b)=>a.ds.localeCompare(b.ds));
+}
+
 function aggregateMonthly(rows,selectedKeys){
   const filtered=selectedKeys&&selectedKeys.length?rows.filter(r=>selectedKeys.includes(r._key)):rows;
   const byMonth={};
@@ -965,6 +1006,80 @@ function switchBudgetTab(tab){
   if(bP){bP.classList.toggle("active",!isBudget);}
 }
 
+function weeklySectionHTML(c,i){
+  const weeks=getWeeklyForCamp(groupKey(c.base));
+  if(!weeks.length)return"";
+  const{hasApp,hasIfood,both}=c;
+  const cols=[];
+  if(hasIfood||both){
+    cols.push({lbl:"Cliques no Link",clr:"var(--ifood)",fn:w=>N(w.ifood.linkClicks)});
+    cols.push({lbl:"Cliques Todos iFOOD",clr:"var(--muted2)",fn:w=>N(w.ifood.clicks)});
+  }
+  if(hasApp||both){
+    cols.push({lbl:"Resultado (Compras)",clr:"var(--app)",fn:w=>N(w.app.purchases)});
+    cols.push({lbl:"Cliques Todos APP",clr:"var(--muted2)",fn:w=>N(w.app.clicks)});
+  }
+  const rows=weeks.map(w=>`
+    <tr>
+      <td style="padding:5px 10px 5px 0;color:var(--muted2);font-size:12px;white-space:nowrap;border-bottom:1px solid rgba(0,0,0,.04)">${w.label}</td>
+      ${cols.map(col=>`<td style="padding:5px 10px;text-align:right;font-weight:600;font-size:12px;color:${col.clr};border-bottom:1px solid rgba(0,0,0,.04)">${col.fn(w)}</td>`).join("")}
+    </tr>`).join("");
+  return`
+    <div style="border-top:1px solid var(--border);padding:18px 24px;background:#f8fafc">
+      <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:14px">ACOMPANHAMENTO SEMANAL</div>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:start">
+        <div style="overflow-x:auto">
+          <table style="border-collapse:collapse">
+            <thead><tr>
+              <th style="text-align:left;color:var(--muted);font-weight:700;font-size:10px;letter-spacing:.4px;padding:0 10px 8px 0;text-transform:uppercase;white-space:nowrap">Semana</th>
+              ${cols.map(col=>`<th style="text-align:right;color:${col.clr};font-weight:700;font-size:10px;letter-spacing:.3px;padding:0 10px 8px;text-transform:uppercase;white-space:nowrap">${col.lbl}</th>`).join("")}
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+        <div style="position:relative;min-height:140px"><canvas id="weeklyCamp${i}"></canvas></div>
+      </div>
+    </div>`;
+}
+
+function buildWeeklyCharts(C){
+  Object.keys(CHARTS).filter(k=>k.startsWith("weekly_")).forEach(k=>{CHARTS[k].destroy();delete CHARTS[k];});
+  C.forEach((camp,i)=>{
+    const el=document.getElementById("weeklyCamp"+i);
+    if(!el)return;
+    const weeks=getWeeklyForCamp(groupKey(camp.base));
+    if(!weeks.length)return;
+    const labels=weeks.map(w=>w.label.split(" a ")[0]);
+    const datasets=[];
+    if(camp.hasIfood||camp.both){
+      datasets.push({label:"Cliques no Link (iFOOD)",data:weeks.map(w=>w.ifood.linkClicks),
+        borderColor:"#dc2626",backgroundColor:"rgba(220,38,38,.07)",fill:true,tension:0.3,pointRadius:3,borderWidth:2});
+    }
+    if(camp.hasApp||camp.both){
+      datasets.push({label:"Compras (APP)",data:weeks.map(w=>w.app.purchases),
+        borderColor:"#16a34a",backgroundColor:"rgba(22,163,74,.07)",fill:true,tension:0.3,pointRadius:3,borderWidth:2});
+    }
+    if(!datasets.length)return;
+    CHARTS["weekly_"+i]=new Chart(el,{
+      type:"line",data:{labels,datasets},
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        interaction:{mode:"index",intersect:false},
+        plugins:{
+          legend:{display:datasets.length>1,position:"top",
+            labels:{color:"#64748b",font:{size:10},boxWidth:10,padding:8}},
+          tooltip:{backgroundColor:"#fff",borderColor:"#e2e8f0",borderWidth:1,
+            titleColor:"#64748b",bodyColor:"#0f172a",padding:8}
+        },
+        scales:{
+          x:{ticks:{color:"#94a3b8",font:{size:9},maxRotation:30},grid:{color:"#f1f5f9"}},
+          y:{beginAtZero:true,ticks:{color:"#94a3b8",font:{size:9}},grid:{color:"#f1f5f9"}},
+        }
+      }
+    });
+  });
+}
+
 function render(data){
   lastData=data;
   const C=data.campaigns;
@@ -1021,6 +1136,7 @@ function render(data){
 
   buildCharts(C);
   buildCampaignCharts(C);
+  buildWeeklyCharts(C);
   renderCampaignFilter(C);
 }
 
@@ -1086,6 +1202,7 @@ function campaignCard(c,i){
         </div>
 
       </div>
+      ${weeklySectionHTML(c,i)}
     </div>`;
   }
 
@@ -1127,6 +1244,7 @@ function campaignCard(c,i){
           <div style="position:relative;flex:1;min-height:200px"><canvas id="trendCamp${i}"></canvas></div>
         </div>
       </div>
+      ${weeklySectionHTML(c,i)}
     </div>`;
 }
 
