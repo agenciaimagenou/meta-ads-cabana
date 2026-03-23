@@ -576,11 +576,12 @@ async function fetchMonthlyInsights(){
 }
 
 async function fetchWeeklyInsights(){
+  // Diário — agrupamos client-side em seg-dom
   const p=new URLSearchParams({
     level:"campaign",
     time_range:JSON.stringify({since:STATE.since,until:STATE.until}),
-    time_increment:"7",
-    fields:"campaign_name,date_start,date_stop,clicks,inline_link_clicks,actions",
+    time_increment:"1",
+    fields:"campaign_name,date_start,clicks,inline_link_clicks,actions",
     filtering:JSON.stringify([{field:"campaign.effective_status",operator:"IN",value:["ACTIVE","PAUSED"]}]),
     limit:"500",access_token:CFG.token,
   });
@@ -813,31 +814,73 @@ function tagMonthlyRows(rows){
   }));
 }
 
+// Retorna {monday:"YYYY-MM-DD", sunday:"YYYY-MM-DD"} da semana (seg-dom) de uma data
+function weekBounds(dateStr){
+  const d=new Date(dateStr+"T00:00:00Z");
+  const dow=d.getUTCDay(); // 0=dom,1=seg,...,6=sab
+  const toMon=dow===0?-6:1-dow;
+  const mon=new Date(d);mon.setUTCDate(d.getUTCDate()+toMon);
+  const sun=new Date(mon);sun.setUTCDate(mon.getUTCDate()+6);
+  const monStr=mon.toISOString().slice(0,10);
+  const sunStr=sun.toISOString().slice(0,10);
+  return{monday:monStr,sunday:sunStr,label:`${DD(monStr)} a ${DD(sunStr)}`};
+}
+
 function tagWeeklyRows(rows){
   const appKw=(CFG.appKw||"APP").toUpperCase();
   const ifoodKw=(CFG.ifoodKw||"IFOOD").toUpperCase();
-  return rows.map(r=>({
-    ...r,
-    _key:groupKey(baseName(r.campaign_name||"—",appKw,ifoodKw)),
-    _channel:getChannel(r.campaign_name||"—",appKw,ifoodKw),
-    _clicks:parseInt(r.clicks||0),
-    _linkClicks:parseInt(r.inline_link_clicks||0),
-    _purchases:parseFloat((r.actions||[]).find(a=>["purchase","offsite_conversion.fb_pixel_purchase","onsite_conversion.purchase"].includes(a.action_type))?.value||0),
-    _weekLabel:`${DD(r.date_start)} a ${DD(r.date_stop||r.date_start)}`,
-  }));
+  return rows.map(r=>{
+    const wb=weekBounds(r.date_start||"");
+    return{
+      ...r,
+      _key:groupKey(baseName(r.campaign_name||"—",appKw,ifoodKw)),
+      _channel:getChannel(r.campaign_name||"—",appKw,ifoodKw),
+      _clicks:parseInt(r.clicks||0),
+      _linkClicks:parseInt(r.inline_link_clicks||0),
+      _purchases:parseFloat((r.actions||[]).find(a=>["purchase","offsite_conversion.fb_pixel_purchase","onsite_conversion.purchase"].includes(a.action_type))?.value||0),
+      _weekLabel:wb.label,
+      _weekMonday:wb.monday,
+    };
+  });
+}
+
+// Gera slots fixos de seg-dom a partir da primeira segunda >= since
+function getWeekSlots(since, until){
+  const d=new Date(since+"T00:00:00Z");
+  const dow=d.getUTCDay(); // 0=dom,1=seg,...,6=sab
+  // dias até a próxima segunda (ou 0 se já for segunda)
+  const toNextMon=dow===1?0:(dow===0?1:8-dow);
+  const firstMon=new Date(d);firstMon.setUTCDate(d.getUTCDate()+toNextMon);
+  const slots=[];
+  let mon=firstMon.toISOString().slice(0,10);
+  while(mon<=until){
+    const sunD=new Date(mon+"T00:00:00Z");sunD.setUTCDate(sunD.getUTCDate()+6);
+    const sun=sunD.toISOString().slice(0,10);
+    slots.push({monday:mon,label:`${DD(mon)} a ${DD(sun)}`});
+    const nextD=new Date(mon+"T00:00:00Z");nextD.setUTCDate(nextD.getUTCDate()+7);
+    mon=nextD.toISOString().slice(0,10);
+  }
+  return slots;
 }
 
 function getWeeklyForCamp(key){
-  const rows=weeklyRawRows.filter(r=>r._key===key);
-  const weekMap={};const weekOrder=[];
-  rows.forEach(r=>{
-    const wk=r._weekLabel;
-    if(!weekMap[wk]){weekMap[wk]={label:wk,ds:r.date_start,app:{clicks:0,purchases:0},ifood:{clicks:0,linkClicks:0}};weekOrder.push(wk);}
-    const w=weekMap[wk];
+  // slots fixos iguais para todos os cards
+  const slots=getWeekSlots(STATE.since,STATE.until);
+  // agrega dados por _weekMonday
+  const dataMap={};
+  weeklyRawRows.filter(r=>r._key===key).forEach(r=>{
+    const wk=r._weekMonday;
+    if(!dataMap[wk])dataMap[wk]={app:{clicks:0,purchases:0},ifood:{clicks:0,linkClicks:0}};
+    const w=dataMap[wk];
     if(r._channel==="app"){w.app.clicks+=r._clicks;w.app.purchases+=r._purchases;}
     else{w.ifood.clicks+=r._clicks;w.ifood.linkClicks+=r._linkClicks;}
   });
-  return weekOrder.map(wk=>weekMap[wk]).sort((a,b)=>a.ds.localeCompare(b.ds));
+  // retorna todos os slots (0 onde não há dados)
+  return slots.map(s=>({
+    label:s.label,ds:s.monday,
+    app:dataMap[s.monday]?.app||{clicks:0,purchases:0},
+    ifood:dataMap[s.monday]?.ifood||{clicks:0,linkClicks:0},
+  }));
 }
 
 function aggregateMonthly(rows,selectedKeys){
@@ -1265,7 +1308,7 @@ function metricsBlock(m, type, showBadge){
   const mainC=isApp?"var(--app)":"var(--ifood)";
   return`
     ${showBadge?`<div style="margin-bottom:14px">${badge}</div>`:""}
-    <div style="font-size:32px;font-weight:900;color:${mainC};line-height:1">${N(mainN)}</div>
+    <div style="font-size:32px;font-weight:900;color:${mainC};line-height:1">${(+mainN||0).toLocaleString("pt-BR")}</div>
     <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin:3px 0 16px">${mainL}</div>
     ${metricsRows(m,type)}`;
 }
@@ -1273,28 +1316,29 @@ function metricsBlock(m, type, showBadge){
 // Linhas de métricas (grid 1 col, usado dentro do bloco)
 function metricsRows(m, type){
   const isApp=type==="app";
+  const NX=v=>(+v||0).toLocaleString("pt-BR");
   const resultVal =isApp?m.purchases:m.linkClicks;
   const resultLbl =isApp?"Resultado (Compras)":"Resultado (Cliques link)";
   const resultClr =isApp?"var(--app)":"var(--ifood)";
   const resultRow =`<div class="mrow">
     <span class="mlabel" style="color:${resultClr}">${resultLbl}</span>
-    <span class="mval" style="color:${resultClr}">${N(resultVal)}</span>
+    <span class="mval" style="color:${resultClr}">${NX(resultVal)}</span>
   </div>`;
   const rows=isApp
     ?[["CPL",           m.cpl>0?R(m.cpl):"—"],
       ["Valor investido",R(m.spend)],
-      ["Cliques",       N(m.clicks)],
-      ["Impressões",    N(m.impressions)],
-      ["Alcance",       N(m.reach)],
+      ["Cliques",       NX(m.clicks)],
+      ["Impressões",    NX(m.impressions)],
+      ["Alcance",       NX(m.reach)],
       ["CPM",           R(m.cpm)],
       ["CTR",           m.ctr.toFixed(2)+"%"],
       ["Frequência",    m.frequency>0?m.frequency.toFixed(2):"—"],
       ["ROAS",          m.roas>0?m.roas.toFixed(2)+"x":"—"]]
     :[["CPC Link",      m.cpcLink>0?R(m.cpcLink):"—"],
       ["Valor investido",R(m.spend)],
-      ["Cliques",       N(m.clicks)],
-      ["Impressões",    N(m.impressions)],
-      ["Alcance",       N(m.reach)],
+      ["Cliques",       NX(m.clicks)],
+      ["Impressões",    NX(m.impressions)],
+      ["Alcance",       NX(m.reach)],
       ["CPM",           R(m.cpm)],
       ["CTR",           m.ctr.toFixed(2)+"%"],
       ["Frequência",    m.frequency>0?m.frequency.toFixed(2):"—"]];
@@ -1311,11 +1355,11 @@ function buildComparison(a, b){
   };
   const rows=[
     {l:"Investimento",   av:R(a.spend),            bv:R(b.spend),            wn:w(a.spend,b.spend)},
-    {l:"Compras / Clicks",av:N(a.purchases),        bv:N(b.linkClicks),       wn:w(a.purchases,b.linkClicks)},
+    {l:"Compras / Clicks",av:(+a.purchases||0).toLocaleString("pt-BR"),bv:(+b.linkClicks||0).toLocaleString("pt-BR"),wn:w(a.purchases,b.linkClicks)},
     {l:"CPL / CPC Link", av:a.cpl>0?R(a.cpl):"—",  bv:b.cpcLink>0?R(b.cpcLink):"—",wn:w(a.cpl||Infinity,b.cpcLink||Infinity,true)},
     {l:"CTR",            av:a.ctr.toFixed(2)+"%",   bv:b.ctr.toFixed(2)+"%",  wn:w(a.ctr,b.ctr)},
     {l:"CPM",            av:R(a.cpm),               bv:R(b.cpm),              wn:w(a.cpm,b.cpm,true)},
-    {l:"Impressões",     av:N(a.impressions),        bv:N(b.impressions),      wn:w(a.impressions,b.impressions)},
+    {l:"Impressões",     av:(+a.impressions||0).toLocaleString("pt-BR"),bv:(+b.impressions||0).toLocaleString("pt-BR"),wn:w(a.impressions,b.impressions)},
     {l:"Frequência",     av:a.frequency>0?a.frequency.toFixed(2):"—",bv:b.frequency>0?b.frequency.toFixed(2):"—",wn:["",""]},
   ];
   return`
