@@ -12,33 +12,38 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
 :root{
-  --bg:#f1f5f9;--card:#ffffff;--card2:#f8fafc;--border:#e2e8f0;
-  --app:#16a34a;--ifood:#dc2626;--ifood-bar:#db2777;
-  --muted:#94a3b8;--muted2:#475569;
+  --bg:#eef1f6;--card:#ffffff;--card2:#f8fafc;--border:#e2e8f0;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.05);
+  --shadow-hover:0 8px 32px rgba(0,0,0,.12);
+  --app:#16a34a;--app-light:rgba(22,163,74,.1);
+  --ifood:#dc2626;--ifood-bar:#db2777;
+  --muted:#94a3b8;--muted2:#64748b;
+  --radius:20px;--radius-sm:12px;
 }
 *{font-family:'Inter',sans-serif;box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:#0f172a;min-height:100vh}
+body{background:var(--bg);color:#0f172a;min-height:100vh;zoom:0.82}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
 .card2{background:var(--card2);border:1px solid var(--border);border-radius:12px}
-.kpi-card{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:20px 22px;transition:border-color .2s,transform .15s;cursor:default}
-.kpi-card:hover{border-color:#94a3b8;transform:translateY(-1px)}
-.section-title{display:flex;align-items:center;gap:8px;margin-bottom:18px}
-.section-title::before{content:'';width:3px;height:16px;background:var(--app);border-radius:2px;flex-shrink:0}
-.section-title span{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--muted2);text-transform:uppercase}
+.kpi-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;cursor:default;position:relative;overflow:hidden}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kpi-clr,#e2e8f0);border-radius:16px 16px 0 0}
+.section-title{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.section-title::before{content:'';width:3px;height:18px;background:var(--app);border-radius:2px;flex-shrink:0}
+.section-title span{font-size:12px;font-weight:800;letter-spacing:.6px;color:#0f172a;text-transform:uppercase}
 
-.mrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:13px}
+.mrow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:11px}
 .mrow:last-child{border-bottom:none}
 .mlabel{color:#64748b;font-weight:500}.mval{font-weight:700;color:#0f172a}
 
 .bbar{background:#e2e8f0;border-radius:6px;height:8px;overflow:hidden}
 .bbar-fill{height:100%;border-radius:6px;transition:width .6s}
 
-.btn{padding:8px 16px;border-radius:9px;font-size:12px;font-weight:700;border:1px solid var(--border);cursor:pointer;transition:all .15s;background:#fff;color:var(--muted2)}
-.btn:hover{background:#f1f5f9;color:#0f172a;border-color:#94a3b8}
-.btn.active,.btn-p{background:var(--app)!important;color:#fff!important;border-color:var(--app)!important}
-.btn-p:hover{background:#15803d!important}
+.btn{padding:8px 18px;border-radius:10px;font-size:12px;font-weight:700;border:1px solid var(--border);cursor:pointer;transition:all .15s;background:#fff;color:var(--muted2)}
+.btn:hover{background:#f8fafc;color:#0f172a;border-color:#94a3b8}
+.btn.active,.btn-p{background:var(--app)!important;color:#fff!important;border-color:var(--app)!important;box-shadow:0 2px 8px rgba(22,163,74,.25)!important}
+.btn-p:hover{background:#15803d!important;box-shadow:0 4px 14px rgba(22,163,74,.35)!important}
 
 .ctab{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:700;border:1px solid;cursor:pointer;transition:all .15s;white-space:nowrap;background:transparent;color:var(--muted)}
 .ctab.active{color:#0f172a!important;background:rgba(0,0,0,.06)}
@@ -178,7 +183,7 @@ label{font-size:12px;color:var(--muted2);font-weight:600;display:block;margin-bo
 
 <!-- HEADER -->
 <header style="background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:100;box-shadow:0 1px 6px rgba(0,0,0,.06)">
-  <div style="max-width:1320px;margin:0 auto;padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;gap:16px">
+  <div style="max-width:1200px;margin:0 auto;padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;gap:16px">
     <div style="display:flex;align-items:center;gap:12px">
       <div style="width:28px;height:28px;background:var(--app);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <svg width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -197,7 +202,7 @@ label{font-size:12px;color:var(--muted2);font-weight:600;display:block;margin-bo
 
 <!-- FILTROS -->
 <div style="background:#fff;border-bottom:1px solid #e2e8f0;position:sticky;top:58px;z-index:90;box-shadow:0 1px 4px rgba(0,0,0,.04)">
-  <div style="max-width:1320px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:12px">
+  <div style="max-width:1200px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:12px">
 
     <!-- Account filter -->
     <div id="accountFilter" style="flex-shrink:0"></div>
@@ -256,7 +261,7 @@ label{font-size:12px;color:var(--muted2);font-weight:600;display:block;margin-bo
 
     <!-- Buscar -->
     <div style="flex-shrink:0">
-      <button class="btn btn-p" onclick="run()" style="padding:9px 24px;white-space:nowrap;display:flex;align-items:center;gap:7px">
+      <button onclick="run()" style="display:flex;align-items:center;gap:8px;background:var(--app);color:#fff;border:none;border-radius:12px;padding:11px 24px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 2px 10px rgba(22,163,74,.3);font-family:'Inter',sans-serif;letter-spacing:-.1px" onmouseover="this.style.boxShadow='0 4px 18px rgba(22,163,74,.45)'" onmouseout="this.style.boxShadow='0 2px 10px rgba(22,163,74,.3)'"  >
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.6"/></svg>
         Buscar dados
       </button>
@@ -266,7 +271,7 @@ label{font-size:12px;color:var(--muted2);font-weight:600;display:block;margin-bo
 </div>
 
 <!-- MAIN -->
-<main style="max-width:1320px;margin:0 auto;padding:32px 24px">
+<main style="max-width:1200px;margin:0 auto;padding:24px 20px">
   <div id="content">
     <div style="text-align:center;padding:120px 0;color:var(--muted)">
       <div style="width:60px;height:60px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
@@ -618,6 +623,8 @@ function pickColor(n){if(!_cc[n])_cc[n]=PALETTE[(_ci.n++)%PALETTE.length];return
 // Detecta canal pelo nome da campanha
 function getChannel(name, appKw, ifoodKw){
   const u=name.toUpperCase();
+  // Campanhas [99] são canal separado
+  if(u.includes("[99]")) return "ninetynine";
   // Testa primeiro IFOOD (mais específico)
   if(u.includes("["+ifoodKw+"]")||u.includes(ifoodKw)) return "ifood";
   if(u.includes("["+appKw+"]")  ||u.includes(appKw))   return "app";
@@ -742,7 +749,7 @@ function process(insightRows, adsRows){
     const key  =groupKey(base);      // chave normalizada p/ agrupamento
 
     if(!groups[key]){
-      groups[key]={base,color:pickColor(key),app:blank(),ifood:blank()};
+      groups[key]={base,color:pickColor(key),app:blank(),ifood:blank(),ninetynine:blank()};
       orderMap[key]=Object.keys(orderMap).length;
     }
     // mantém o display name mais curto como representante do grupo
@@ -771,11 +778,12 @@ function process(insightRows, adsRows){
   const campaigns=Object.values(groups)
     .sort((a,b)=>orderMap[groupKey(a.base)]-orderMap[groupKey(b.base)])
     .map(g=>{
-      fin(g.app); fin(g.ifood);
-      g.hasApp  =g.app.spend>0;
-      g.hasIfood=g.ifood.spend>0;
-      g.both    =g.hasApp&&g.hasIfood;
-      g.investment=g.app.spend+g.ifood.spend;
+      fin(g.app); fin(g.ifood); fin(g.ninetynine);
+      g.hasApp      =g.app.spend>0;
+      g.hasIfood    =g.ifood.spend>0;
+      g.has99       =g.ninetynine.spend>0;
+      g.both        =g.hasApp&&g.hasIfood;
+      g.investment  =g.app.spend+g.ifood.spend+g.ninetynine.spend;
 
       // Junta thumbs dos IDs de campanha de cada canal
       const merge=(ids,key)=>{
@@ -883,6 +891,175 @@ function getWeeklyForCamp(key){
   }));
 }
 
+// ── Acompanhamento semanal global (somando todas as campanhas) ──
+function getGlobalWeekly(keys){
+  const slots=getWeekSlots(STATE.since,STATE.until);
+  const dataMap={};
+  const rows=keys&&keys.length?weeklyRawRows.filter(r=>keys.includes(r._key)):weeklyRawRows;
+  rows.forEach(r=>{
+    const wk=r._weekMonday;
+    if(!dataMap[wk])dataMap[wk]={app:{clicks:0,purchases:0},ifood:{clicks:0,linkClicks:0},ninetynine:{clicks:0,purchases:0}};
+    const w=dataMap[wk];
+    if(r._channel==="ninetynine"){w.ninetynine.clicks+=r._clicks;w.ninetynine.purchases+=r._purchases;}
+    else if(r._channel==="app"){w.app.clicks+=r._clicks;w.app.purchases+=r._purchases;}
+    else{w.ifood.clicks+=r._clicks;w.ifood.linkClicks+=r._linkClicks;}
+  });
+  return slots.map(s=>({
+    label:s.label,ds:s.monday,
+    app:dataMap[s.monday]?.app||{clicks:0,purchases:0},
+    ifood:dataMap[s.monday]?.ifood||{clicks:0,linkClicks:0},
+    ninetynine:dataMap[s.monday]?.ninetynine||{clicks:0,purchases:0},
+  }));
+}
+
+function globalWeeklySectionHTML(C){
+  const keys=C.map(c=>groupKey(c.base));
+  const weeks=getGlobalWeekly(keys);
+  if(!weeks.length)return"";
+  const NX=v=>(+v||0).toLocaleString("pt-BR");
+  const appRows=weeks.map(w=>`
+    <tr>
+      <td style="padding:5px 8px 5px 0;color:var(--muted2);font-size:11px;white-space:nowrap;border-bottom:1px solid rgba(0,0,0,.04)">${w.label}</td>
+      <td style="padding:5px 8px;text-align:right;font-weight:700;font-size:12px;color:var(--app);border-bottom:1px solid rgba(0,0,0,.04)">${NX(w.app.purchases)}</td>
+      <td style="padding:5px 8px;text-align:right;font-weight:600;font-size:12px;color:var(--muted2);border-bottom:1px solid rgba(0,0,0,.04)">${NX(w.app.clicks)}</td>
+    </tr>`).join("");
+  const ifoodRows=weeks.map(w=>`
+    <tr>
+      <td style="padding:5px 8px 5px 0;color:var(--muted2);font-size:11px;white-space:nowrap;border-bottom:1px solid rgba(0,0,0,.04)">${w.label}</td>
+      <td style="padding:5px 8px;text-align:right;font-weight:700;font-size:12px;color:var(--ifood);border-bottom:1px solid rgba(0,0,0,.04)">${NX(w.ifood.linkClicks)}</td>
+      <td style="padding:5px 8px;text-align:right;font-weight:600;font-size:12px;color:var(--muted2);border-bottom:1px solid rgba(0,0,0,.04)">${NX(w.ifood.clicks)}</td>
+    </tr>`).join("");
+  const thStyle=`style="text-align:right;font-weight:700;font-size:10px;letter-spacing:.3px;padding:0 8px 8px;text-transform:uppercase;white-space:nowrap"`;
+  const nnRows=weeks.map(w=>`
+    <tr>
+      <td style="padding:5px 8px 5px 0;color:var(--muted2);font-size:11px;white-space:nowrap;border-bottom:1px solid rgba(0,0,0,.04)">${w.label}</td>
+      <td style="padding:5px 8px;text-align:right;font-weight:700;font-size:12px;color:#8b5cf6;border-bottom:1px solid rgba(0,0,0,.04)">${NX(w.ninetynine.purchases)}</td>
+      <td style="padding:5px 8px;text-align:right;font-weight:600;font-size:12px;color:var(--muted2);border-bottom:1px solid rgba(0,0,0,.04)">${NX(w.ninetynine.clicks)}</td>
+    </tr>`).join("");
+  return`
+    <!-- Tab bar -->
+    <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px">
+      <button class="tab-btn active" id="gwTabBtnApp" onclick="switchGlobalWeeklyTab('app')">APP</button>
+      <button class="tab-btn" id="gwTabBtnIfood" onclick="switchGlobalWeeklyTab('ifood')">iFOOD</button>
+      <button class="tab-btn" id="gwTabBtn99" onclick="switchGlobalWeeklyTab('99')">99</button>
+    </div>
+    <!-- Tab APP -->
+    <div id="gwTabApp">
+      <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:24px;align-items:start">
+        <div style="overflow-x:auto;min-width:0">
+          <table style="border-collapse:collapse;width:100%">
+            <thead><tr>
+              <th style="text-align:left;color:var(--muted);font-weight:700;font-size:10px;letter-spacing:.4px;padding:0 8px 8px 0;text-transform:uppercase;white-space:nowrap">Semana</th>
+              <th ${thStyle} style="color:var(--app)">Compras</th>
+              <th ${thStyle} style="color:var(--muted2)">Cliques APP</th>
+            </tr></thead>
+            <tbody>${appRows}</tbody>
+          </table>
+        </div>
+        <div style="position:relative;min-height:160px"><canvas id="gwChartApp"></canvas></div>
+      </div>
+    </div>
+    <!-- Tab iFOOD -->
+    <div id="gwTabIfood" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:24px;align-items:start">
+        <div style="overflow-x:auto;min-width:0">
+          <table style="border-collapse:collapse;width:100%">
+            <thead><tr>
+              <th style="text-align:left;color:var(--muted);font-weight:700;font-size:10px;letter-spacing:.4px;padding:0 8px 8px 0;text-transform:uppercase;white-space:nowrap">Semana</th>
+              <th ${thStyle} style="color:var(--ifood)">Cliques Link</th>
+              <th ${thStyle} style="color:var(--muted2)">Cliques Todos</th>
+            </tr></thead>
+            <tbody>${ifoodRows}</tbody>
+          </table>
+        </div>
+        <div style="position:relative;min-height:160px"><canvas id="gwChartIfood"></canvas></div>
+      </div>
+    </div>
+    <!-- Tab 99 -->
+    <div id="gwTab99" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:24px;align-items:start">
+        <div style="overflow-x:auto;min-width:0">
+          <table style="border-collapse:collapse;width:100%">
+            <thead><tr>
+              <th style="text-align:left;color:var(--muted);font-weight:700;font-size:10px;letter-spacing:.4px;padding:0 8px 8px 0;text-transform:uppercase;white-space:nowrap">Semana</th>
+              <th ${thStyle} style="color:#8b5cf6">Compras</th>
+              <th ${thStyle} style="color:var(--muted2)">Cliques 99</th>
+            </tr></thead>
+            <tbody>${nnRows}</tbody>
+          </table>
+        </div>
+        <div style="position:relative;min-height:160px"><canvas id="gwChart99"></canvas></div>
+      </div>
+    </div>`;
+}
+
+function switchGlobalWeeklyTab(tab){
+  ["app","ifood","99"].forEach(t=>{
+    const el=document.getElementById("gwTab"+(t==="99"?"99":t==="app"?"App":"Ifood"));
+    const btn=document.getElementById("gwTabBtn"+(t==="99"?"99":t==="app"?"App":"Ifood"));
+    if(el)el.style.display=tab===t?"":"none";
+    if(btn)btn.classList.toggle("active",tab===t);
+  });
+}
+
+function buildGlobalWeeklyCharts(C){
+  ["gwApp","gwIfood","gw99"].forEach(k=>{if(CHARTS[k]){CHARTS[k].destroy();delete CHARTS[k];}});
+  const keys=C.map(c=>groupKey(c.base));
+  const weeks=getGlobalWeekly(keys);
+  if(!weeks.length)return;
+  const labels=weeks.map(w=>w.label.split(" a ")[0]);
+  const mkDs=(label,raw,clr)=>{
+    const maxV=Math.max(...raw,0.001);
+    return{label,_raw:raw,data:raw.map(v=>+(v/maxV*100).toFixed(1)),
+      borderColor:clr,backgroundColor:clr+"22",fill:true,tension:0.4,
+      pointRadius:3,pointHoverRadius:12,borderWidth:1.5};
+  };
+  const chartOpts=(datasets)=>({
+    type:"line",data:{labels,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:"index",intersect:false},
+      plugins:{
+        legend:{display:true,position:"top",labels:{color:"#64748b",font:{size:10},boxWidth:10,padding:8}},
+        tooltip:{backgroundColor:"#fff",borderColor:"#e2e8f0",borderWidth:1,
+          titleColor:"#64748b",bodyColor:"#0f172a",padding:8,
+          callbacks:{label:ctx=>` ${ctx.dataset.label}: ${(ctx.dataset._raw[ctx.dataIndex]||0).toLocaleString("pt-BR")}`}}
+      },
+      scales:{
+        x:{ticks:{color:"#94a3b8",font:{size:9},maxRotation:30},grid:{color:"#f1f5f9"}},
+        y:{min:0,max:110,ticks:{color:"#94a3b8",font:{size:9},callback:v=>v<=100?v+"%":""},grid:{color:"#f1f5f9"}},
+      }
+    }
+  });
+  const elApp=document.getElementById("gwChartApp");
+  if(elApp) CHARTS["gwApp"]=new Chart(elApp,chartOpts([
+    mkDs("Compras (APP)",weeks.map(w=>w.app.purchases),"#10b981"),
+    mkDs("Cliques Todos APP",weeks.map(w=>w.app.clicks),"#3b82f6"),
+  ]));
+  // iFOOD: normaliza ambas pelo mesmo máximo (total clicks) para mostrar o gap real
+  const elIfood=document.getElementById("gwChartIfood");
+  if(elIfood){
+    const allClks=weeks.map(w=>w.ifood.clicks);
+    const linkClks=weeks.map(w=>w.ifood.linkClicks);
+    const maxIfood=Math.max(...allClks,0.001);
+    const mkShared=(label,raw,clr)=>({
+      label,_raw:raw,
+      data:raw.map(v=>+(v/maxIfood*100).toFixed(1)),
+      borderColor:clr,backgroundColor:clr+"22",fill:true,tension:0.4,
+      pointRadius:3,pointHoverRadius:12,borderWidth:1.5
+    });
+    CHARTS["gwIfood"]=new Chart(elIfood,chartOpts([
+      mkShared("Cliques Todos iFOOD",allClks,"#3b82f6"),
+      mkShared("Cliques no Link",linkClks,"#ef4444"),
+    ]));
+  }
+  const el99=document.getElementById("gwChart99");
+  if(el99) CHARTS["gw99"]=new Chart(el99,chartOpts([
+    mkDs("Compras (99)",weeks.map(w=>w.ninetynine.purchases),"#8b5cf6"),
+    mkDs("Cliques Todos 99",weeks.map(w=>w.ninetynine.clicks),"#a78bfa"),
+  ]));
+}
+
 function aggregateMonthly(rows,selectedKeys){
   const filtered=selectedKeys&&selectedKeys.length?rows.filter(r=>selectedKeys.includes(r._key)):rows;
   const byMonth={};
@@ -965,33 +1142,29 @@ function kpiHTML(C, total){
   const vals={spend:total,purchases:totP,linkClicks:totL,clicks:totC,impressions:totI,cpc:avgCPC};
   const subs={spend:C.length+" campanhas",purchases:"conversões",linkClicks:"link clicks",clicks:"todos os canais",impressions:"total",cpc:"custo por clique"};
   return Object.entries(KPI_META).map(([metric,cfg])=>`
-    <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e2e8f0;border-left:3px solid ${cfg.clr};border-radius:10px;padding:10px 14px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
-      <div style="flex:1;min-width:0">
-        <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:1px">${cfg.lbl}</div>
-        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
-          <span style="font-size:20px;font-weight:900;color:${cfg.clr};letter-spacing:-.5px;line-height:1.2">${cfg.fmt(vals[metric])}</span>
-          <span style="font-size:11px;color:var(--muted)">${subs[metric]}</span>
-        </div>
-      </div>
-    </div>`).join("");
+  <div class="kpi-card" style="--kpi-clr:${cfg.clr}">
+    <div style="font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">${cfg.lbl}</div>
+    <div style="font-size:18px;font-weight:900;color:${cfg.clr};letter-spacing:-.5px;line-height:1;margin-bottom:4px">${cfg.fmt(vals[metric])}</div>
+    <div style="font-size:10px;color:var(--muted)">${subs[metric]}</div>
+  </div>`).join("");
 }
 
 function budgetInnerHTML(C, total){
   const groups=groupByProduct(C);
   const prodContent=groups.length
-    ?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">
+    ?`<div style="display:grid;grid-template-columns:repeat(${groups.length},1fr);gap:10px">
         ${groups.map(g=>{const pct=total>0?g.spend/total*100:0;return`
-          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid ${g.color};border-radius:12px;padding:16px">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px">
-              <div style="font-weight:800;font-size:13px;letter-spacing:.3px;color:#0f172a;text-transform:uppercase">${g.name}</div>
-              <div style="font-size:13px;font-weight:900;color:${g.color};margin-left:8px;white-space:nowrap">${pct.toFixed(1)}%</div>
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid ${g.color};border-radius:10px;padding:11px 12px">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px">
+              <div style="font-weight:800;font-size:11px;letter-spacing:.3px;color:#0f172a;text-transform:uppercase;line-height:1.3">${g.name}</div>
+              <div style="font-size:12px;font-weight:900;color:${g.color};margin-left:6px;white-space:nowrap">${pct.toFixed(1)}%</div>
             </div>
-            <div style="font-size:11px;color:var(--muted);margin-bottom:10px">${g.campaigns.length} variações de campanha</div>
-            <div class="bbar" style="margin-bottom:12px"><div class="bbar-fill" style="width:${pct}%;background:${g.color}"></div></div>
-            <div class="mrow"><span class="mlabel">Investimento</span><span class="mval" style="color:var(--app)">${R(g.spend)}</span></div>
-            <div class="mrow"><span class="mlabel">Compras (App)</span><span class="mval">${N(g.purchases)}</span></div>
-            <div class="mrow"><span class="mlabel">Cliques iFOOD</span><span class="mval">${N(g.linkClicks)}</span></div>
-            <div class="mrow" style="border-bottom:none"><span class="mlabel">Total Cliques</span><span class="mval">${N(g.clicks)}</span></div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:7px">${g.campaigns.length} variações</div>
+            <div class="bbar" style="margin-bottom:8px;height:4px"><div class="bbar-fill" style="width:${pct}%;background:${g.color};height:4px"></div></div>
+            <div class="mrow" style="padding:3px 0"><span class="mlabel" style="font-size:10px">Investimento</span><span class="mval" style="font-size:10px;color:var(--app)">${R(g.spend)}</span></div>
+            <div class="mrow" style="padding:3px 0"><span class="mlabel" style="font-size:10px">Compras (App)</span><span class="mval" style="font-size:10px">${N(g.purchases)}</span></div>
+            <div class="mrow" style="padding:3px 0"><span class="mlabel" style="font-size:10px">Cliques iFOOD</span><span class="mval" style="font-size:10px">${N(g.linkClicks)}</span></div>
+            <div class="mrow" style="padding:3px 0;border-bottom:none"><span class="mlabel" style="font-size:10px">Total Cliques</span><span class="mval" style="font-size:10px">${N(g.clicks)}</span></div>
           </div>`}).join("")}
       </div>`
     :`<div style="color:var(--muted);font-size:13px;padding:24px 0;text-align:center">Nenhum produto com múltiplas variações encontrado.</div>`;
@@ -1005,28 +1178,28 @@ function budgetInnerHTML(C, total){
 
     <!-- Tab: Divisão de Verba -->
     <div id="tabBudget">
-      <div class="budget-grid" style="display:grid;grid-template-columns:1fr 130px 58px 220px;gap:14px;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--border);font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.6px;text-transform:uppercase">
+      <div class="budget-grid" style="display:grid;grid-template-columns:1fr 110px 48px 180px;gap:10px;align-items:center;padding-bottom:7px;border-bottom:1px solid var(--border);font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.6px;text-transform:uppercase">
         <span>Campanha</span><span>Investido</span><span>%</span><span class="budget-bar">Distribuição</span>
       </div>
       ${C.map(c=>`
-        <div class="budget-grid" style="display:grid;grid-template-columns:1fr 130px 58px 220px;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.05);transition:background .15s;border-radius:4px">
-          <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
-            <span style="width:10px;height:10px;border-radius:3px;background:${c.color};flex-shrink:0"></span>
-            <span style="font-weight:600;font-size:13px">${c.base}</span>
+        <div class="budget-grid" style="display:grid;grid-template-columns:1fr 110px 48px 180px;gap:10px;align-items:center;padding:3px 0;border-bottom:1px solid rgba(0,0,0,.04);transition:background .15s;border-radius:6px">
+          <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+            <span style="width:8px;height:8px;border-radius:2px;background:${c.color};flex-shrink:0"></span>
+            <span style="font-weight:600;font-size:12px">${c.base}</span>
             ${c.both
-              ?`<span style="font-size:9px;background:rgba(22,163,74,.1);color:var(--app);border:1px solid rgba(22,163,74,.3);border-radius:5px;padding:2px 7px;font-weight:700;letter-spacing:.3px">APP + iFOOD</span>`
+              ?`<span style="font-size:8px;background:rgba(22,163,74,.1);color:var(--app);border:1px solid rgba(22,163,74,.3);border-radius:4px;padding:1px 5px;font-weight:700;letter-spacing:.3px">APP + iFOOD</span>`
               :c.hasApp
-                ?`<span style="font-size:9px;background:rgba(22,163,74,.1);color:var(--app);border:1px solid rgba(22,163,74,.3);border-radius:5px;padding:2px 7px;font-weight:700;letter-spacing:.3px">APP</span>`
-                :`<span style="font-size:9px;background:rgba(220,38,38,.08);color:var(--ifood);border:1px solid rgba(220,38,38,.25);border-radius:5px;padding:2px 7px;font-weight:700;letter-spacing:.3px">iFOOD</span>`}
+                ?`<span style="font-size:8px;background:rgba(22,163,74,.1);color:var(--app);border:1px solid rgba(22,163,74,.3);border-radius:4px;padding:1px 5px;font-weight:700;letter-spacing:.3px">APP</span>`
+                :`<span style="font-size:8px;background:rgba(220,38,38,.08);color:var(--ifood);border:1px solid rgba(220,38,38,.25);border-radius:4px;padding:1px 5px;font-weight:700;letter-spacing:.3px">iFOOD</span>`}
           </div>
-          <div style="font-size:14px;font-weight:700">${R(c.investment)}</div>
-          <div style="font-size:12px;color:var(--muted2);font-weight:600">${c.pct.toFixed(1)}%</div>
-          <div class="budget-bar"><div class="bbar" style="height:6px"><div class="bbar-fill" style="width:${c.pct}%;background:${c.color}"></div></div></div>
+          <div style="font-size:12px;font-weight:700">${R(c.investment)}</div>
+          <div style="font-size:11px;color:var(--muted2);font-weight:600">${c.pct.toFixed(1)}%</div>
+          <div class="budget-bar"><div class="bbar" style="height:5px"><div class="bbar-fill" style="width:${c.pct}%;background:${c.color}"></div></div></div>
         </div>`).join("")}
-      <div class="budget-grid" style="display:grid;grid-template-columns:1fr 130px 58px 220px;gap:14px;padding:14px 0 2px;border-top:1px solid var(--border);margin-top:4px">
-        <span style="font-weight:800;font-size:13px;color:var(--muted2)">TOTAL</span>
-        <span style="font-weight:900;font-size:15px;color:var(--app)">${R(total)}</span>
-        <span style="font-weight:700;font-size:13px">100%</span>
+      <div class="budget-grid" style="display:grid;grid-template-columns:1fr 110px 48px 180px;gap:10px;padding:8px 0 2px;border-top:1px solid var(--border);margin-top:2px">
+        <span style="font-weight:800;font-size:11px;color:var(--muted2)">TOTAL</span>
+        <span style="font-weight:900;font-size:13px;color:var(--app)">${R(total)}</span>
+        <span style="font-weight:700;font-size:11px">100%</span>
         <span></span>
       </div>
     </div>
@@ -1098,7 +1271,7 @@ function buildWeeklyCharts(C){
       const maxV=Math.max(...raw,0.001);
       return{label,_raw:raw,data:raw.map(v=>+(v/maxV*100).toFixed(1)),
         borderColor:clr,backgroundColor:clr+"22",fill:true,tension:0.4,
-        pointRadius:2,pointHoverRadius:5,borderWidth:1.5};
+        pointRadius:2,pointHoverRadius:12,borderWidth:1.5};
     };
     const datasets=[];
     if(camp.hasIfood||camp.both){
@@ -1124,7 +1297,7 @@ function buildWeeklyCharts(C){
         },
         scales:{
           x:{ticks:{color:"#94a3b8",font:{size:9},maxRotation:30},grid:{color:"#f1f5f9"}},
-          y:{min:0,max:100,ticks:{color:"#94a3b8",font:{size:9},callback:v=>v+"%"},grid:{color:"#f1f5f9"}},
+          y:{min:0,max:110,ticks:{color:"#94a3b8",font:{size:9},callback:v=>v<=100?v+"%":""},grid:{color:"#f1f5f9"}},
         }
       }
     });
@@ -1137,23 +1310,25 @@ function render(data){
 
   document.getElementById("content").innerHTML=`
     <!-- Período -->
-    <div id="periodBanner" class="card fu" style="padding:24px 28px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;background:linear-gradient(135deg,#fff 0%,#f8fafc 100%)">
-      <div>
-        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.2);border-radius:6px;padding:3px 10px;margin-bottom:10px">
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--app)"></span>
-          <span style="font-size:10px;font-weight:700;color:var(--app);letter-spacing:1px">RELATÓRIO META ADS</span>
+    <div id="periodBanner" class="card fu" style="padding:28px 32px;margin-bottom:24px;background:linear-gradient(135deg,#fff 0%,#f8fafc 100%)">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px">
+        <div>
+          <div style="display:inline-flex;align-items:center;gap:6px;background:var(--app-light);border:1px solid rgba(22,163,74,.2);border-radius:20px;padding:4px 12px;margin-bottom:12px">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--app);display:inline-block"></span>
+            <span style="font-size:10px;font-weight:700;color:var(--app);letter-spacing:1.2px">RELATÓRIO META ADS</span>
+          </div>
+          <h1 style="font-size:22px;font-weight:900;letter-spacing:-.5px;line-height:1.1;color:#0f172a">${periodLabel(data.since,data.until)}</h1>
+          <div style="color:var(--muted);font-size:12px;margin-top:4px;font-weight:500">${DD(data.since)} até ${DD(data.until)}</div>
         </div>
-        <h1 style="font-size:28px;font-weight:900;letter-spacing:-.8px;line-height:1">${periodLabel(data.since,data.until)}</h1>
-        <div style="color:var(--muted);font-size:13px;margin-top:6px">${DD(data.since)} até ${DD(data.until)}</div>
-      </div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap">
-        <div style="text-align:center;padding:14px 20px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:12px">
-          <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:4px">INVESTIMENTO</div>
-          <div id="bannerInvest" style="font-size:26px;font-weight:900;color:var(--app);letter-spacing:-1px">${R(data.total)}</div>
-        </div>
-        <div style="text-align:center;padding:14px 20px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:12px">
-          <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:4px">CAMPANHAS</div>
-          <div id="bannerCamps" style="font-size:26px;font-weight:900;color:#0f172a;letter-spacing:-1px">${C.length}</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div style="text-align:center;padding:10px 18px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:12px;min-width:110px">
+            <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;margin-bottom:4px;text-transform:uppercase">Investimento</div>
+            <div id="bannerInvest" style="font-size:20px;font-weight:900;color:var(--app);letter-spacing:-.5px;line-height:1">${R(data.total)}</div>
+          </div>
+          <div style="text-align:center;padding:10px 18px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:12px;min-width:80px">
+            <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;margin-bottom:4px;text-transform:uppercase">Campanhas</div>
+            <div id="bannerCamps" style="font-size:20px;font-weight:900;color:#0f172a;letter-spacing:-.5px;line-height:1">${C.length}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1161,6 +1336,12 @@ function render(data){
     <!-- KPIs -->
     <div id="kpiSection" class="kpi-grid fu" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px">
       ${kpiHTML(C,data.total)}
+    </div>
+
+    <!-- Acompanhamento Semanal Global -->
+    <div id="globalWeeklySection" class="card fu" style="padding:24px;margin-bottom:24px">
+      <div class="section-title" style="margin-bottom:16px"><span>Acompanhamento Semanal</span></div>
+      ${globalWeeklySectionHTML(C)}
     </div>
 
     <!-- Divisão de Verba -->
@@ -1188,6 +1369,7 @@ function render(data){
   buildCharts(C);
   buildCampaignCharts(C);
   buildWeeklyCharts(C);
+  buildGlobalWeeklyCharts(C);
   renderCampaignFilter(C);
 }
 
@@ -1202,14 +1384,14 @@ function campaignCard(c,i){
     return`
     <div class="card campaign-card fu" data-key="${groupKey(base)}" style="overflow:hidden;animation-delay:${i*.06}s">
       <!-- Cabeçalho -->
-      <div style="background:linear-gradient(135deg,${color}dd,${color}99);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;color:#fff">
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-weight:900;font-size:15px;letter-spacing:.3px">${base}</span>
-          <span style="font-size:9px;background:rgba(0,0,0,.3);color:#fff;border-radius:5px;padding:3px 9px;font-weight:700;letter-spacing:.5px">APP + iFOOD</span>
+      <div style="background:linear-gradient(135deg,${color}ee,${color}bb);padding:10px 18px;display:flex;justify-content:space-between;align-items:center;color:#fff;box-shadow:inset 0 -1px 0 rgba(0,0,0,.1)">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-weight:900;font-size:13px;letter-spacing:.3px">${base}</span>
+          <span style="font-size:9px;background:rgba(0,0,0,.3);color:#fff;border-radius:4px;padding:2px 7px;font-weight:700;letter-spacing:.5px">APP + iFOOD</span>
         </div>
         <div style="text-align:right">
-          <div style="font-size:10px;opacity:.75;font-weight:600;letter-spacing:.5px">TOTAL</div>
-          <div style="font-size:16px;font-weight:900">${R(c.investment)}</div>
+          <div style="font-size:9px;opacity:.75;font-weight:600;letter-spacing:.5px">TOTAL</div>
+          <div style="font-size:13px;font-weight:900">${R(c.investment)}</div>
         </div>
       </div>
 
@@ -1220,26 +1402,26 @@ function campaignCard(c,i){
         <div style="border-right:1px solid var(--border)">
           <!-- Sub-header: split de investimento -->
           <div style="display:grid;grid-template-columns:1fr 1fr;background:#f8fafc;border-bottom:1px solid var(--border)">
-            <div style="padding:10px 20px;border-right:1px solid var(--border);display:flex;align-items:center;gap:8px">
+            <div style="padding:7px 14px;border-right:1px solid var(--border);display:flex;align-items:center;gap:6px">
               <span class="badge-app">APP</span>
-              <span style="font-weight:700;font-size:13px">${R(app.spend)}</span>
-              <span style="font-size:11px;color:var(--muted)">${c.investment>0?(app.spend/c.investment*100).toFixed(0):0}%</span>
+              <span style="font-weight:700;font-size:11px">${R(app.spend)}</span>
+              <span style="font-size:10px;color:var(--muted)">${c.investment>0?(app.spend/c.investment*100).toFixed(0):0}%</span>
             </div>
-            <div style="padding:10px 20px;display:flex;align-items:center;gap:8px">
+            <div style="padding:7px 14px;display:flex;align-items:center;gap:6px">
               <span class="badge-ifood">iFOOD</span>
-              <span style="font-weight:700;font-size:13px">${R(ifood.spend)}</span>
-              <span style="font-size:11px;color:var(--muted)">${c.investment>0?(ifood.spend/c.investment*100).toFixed(0):0}%</span>
+              <span style="font-weight:700;font-size:11px">${R(ifood.spend)}</span>
+              <span style="font-size:10px;color:var(--muted)">${c.investment>0?(ifood.spend/c.investment*100).toFixed(0):0}%</span>
             </div>
           </div>
           <!-- Métricas lado a lado -->
           <div class="duo" style="display:grid;grid-template-columns:1fr 1px 1fr">
-            <div style="padding:22px">${metricsBlock(app,"app",true)}</div>
+            <div style="padding:14px 16px">${metricsBlock(app,"app",true)}</div>
             <div class="duo-div" style="background:rgba(0,0,0,.06)"></div>
-            <div style="padding:22px">${metricsBlock(ifood,"ifood",true)}</div>
+            <div style="padding:14px 16px">${metricsBlock(ifood,"ifood",true)}</div>
           </div>
           <!-- Comparação -->
-          <div class="cmp-wrap" style="background:#f8fafc;border-top:1px solid var(--border);padding:16px 20px">
-            <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:12px">⚡ COMPARAÇÃO</div>
+          <div class="cmp-wrap" style="background:#f8fafc;border-top:1px solid var(--border);padding:10px 14px">
+            <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:8px">⚡ COMPARAÇÃO</div>
             ${buildComparison(app,ifood)}
           </div>
           <!-- Criativos -->
@@ -1247,9 +1429,9 @@ function campaignCard(c,i){
         </div>
 
         <!-- Direito: gráfico de tendência -->
-        <div style="padding:22px;display:flex;flex-direction:column">
-          <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:12px">TENDÊNCIA — 6 MESES</div>
-          <div style="position:relative;flex:1;min-height:220px"><canvas id="trendCamp${i}"></canvas></div>
+        <div style="padding:14px 18px;display:flex;flex-direction:column">
+          <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:8px">TENDÊNCIA — 6 MESES</div>
+          <div style="position:relative;flex:1;min-height:160px"><canvas id="trendCamp${i}"></canvas></div>
         </div>
 
       </div>
@@ -1258,28 +1440,29 @@ function campaignCard(c,i){
   }
 
   // ── Campanha canal único ──
-  const m   =hasApp?app:ifood;
-  const type=hasApp?"app":"ifood";
-  const thumbs=hasApp?c.thumbsApp:c.thumbsIfood;
+  const has99=c.has99;
+  const m   =hasApp?app:has99?c.ninetynine:ifood;
+  const type=hasApp||has99?"app":"ifood";
+  const thumbs=hasApp||has99?c.thumbsApp:c.thumbsIfood;
 
   return`
     <div class="card campaign-card fu" data-key="${groupKey(base)}" style="overflow:hidden;animation-delay:${i*.06}s">
       <!-- Cabeçalho -->
-      <div style="background:linear-gradient(135deg,${color}dd,${color}99);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;color:#fff">
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-weight:900;font-size:15px;letter-spacing:.3px">${base}</span>
-          ${hasApp?`<span class="badge-app">APP</span>`:`<span class="badge-ifood">iFOOD</span>`}
+      <div style="background:linear-gradient(135deg,${color}ee,${color}bb);padding:10px 18px;display:flex;justify-content:space-between;align-items:center;color:#fff;box-shadow:inset 0 -1px 0 rgba(0,0,0,.1)">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-weight:900;font-size:13px;letter-spacing:.3px">${base}</span>
+          ${hasApp?`<span class="badge-app">APP</span>`:has99?`<span style="font-size:8px;background:rgba(139,92,246,.15);color:#8b5cf6;border:1px solid rgba(139,92,246,.3);border-radius:4px;padding:1px 5px;font-weight:700">99</span>`:`<span class="badge-ifood">iFOOD</span>`}
         </div>
         <div style="text-align:right">
-          <div style="font-size:10px;opacity:.75;font-weight:600;letter-spacing:.5px">INVESTIDO</div>
-          <div style="font-size:16px;font-weight:900">${R(c.investment)}</div>
+          <div style="font-size:9px;opacity:.75;font-weight:600;letter-spacing:.5px">INVESTIDO</div>
+          <div style="font-size:13px;font-weight:900">${R(c.investment)}</div>
         </div>
       </div>
       <!-- Body: split 50/50 -->
       <div style="display:grid;grid-template-columns:1fr 1fr;align-items:stretch">
         <!-- Esquerdo: métricas + criativos -->
-        <div style="padding:22px;border-right:1px solid var(--border)">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 48px">
+        <div style="padding:14px 18px;border-right:1px solid var(--border)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 32px">
             ${metricsRows(m,type)}
           </div>
           ${thumbs.length?`
@@ -1290,9 +1473,9 @@ function campaignCard(c,i){
           :`<div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(0,0,0,.06);font-size:12px;color:#94a3b8">Nenhum criativo ativo.</div>`}
         </div>
         <!-- Direito: gráfico de tendência -->
-        <div style="padding:22px;display:flex;flex-direction:column">
-          <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:12px">TENDÊNCIA — 6 MESES</div>
-          <div style="position:relative;flex:1;min-height:200px"><canvas id="trendCamp${i}"></canvas></div>
+        <div style="padding:14px 18px;display:flex;flex-direction:column">
+          <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:8px">TENDÊNCIA — 6 MESES</div>
+          <div style="position:relative;flex:1;min-height:160px"><canvas id="trendCamp${i}"></canvas></div>
         </div>
       </div>
       ${weeklySectionHTML(c,i)}
@@ -1307,9 +1490,9 @@ function metricsBlock(m, type, showBadge){
   const mainL=isApp?"COMPRAS":"CLIQUES NO LINK";
   const mainC=isApp?"var(--app)":"var(--ifood)";
   return`
-    ${showBadge?`<div style="margin-bottom:14px">${badge}</div>`:""}
-    <div style="font-size:32px;font-weight:900;color:${mainC};line-height:1">${(+mainN||0).toLocaleString("pt-BR")}</div>
-    <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin:3px 0 16px">${mainL}</div>
+    ${showBadge?`<div style="margin-bottom:8px">${badge}</div>`:""}
+    <div style="font-size:22px;font-weight:900;color:${mainC};line-height:1">${(+mainN||0).toLocaleString("pt-BR")}</div>
+    <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin:2px 0 10px">${mainL}</div>
     ${metricsRows(m,type)}`;
 }
 
@@ -1408,12 +1591,12 @@ function buildCharts(C){
       {label:"App",  data:C.map(c=>+c.app.spend.toFixed(2)),  backgroundColor:"#22c55e",borderRadius:4},
       {label:"iFood",data:C.map(c=>+c.ifood.spend.toFixed(2)),backgroundColor:"#ec4899",borderRadius:4},
     ]},
-    options:{responsive:true,plugins:{legend:{labels:{color:"#64748b",font:{size:11},padding:14}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${R(ctx.raw)}`}}},
+    options:{responsive:true,interaction:{mode:"index",intersect:false},plugins:{legend:{labels:{color:"#64748b",font:{size:11},padding:14}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${R(ctx.raw)}`}}},
     scales:{x:{stacked:true,ticks:{color:"#94a3b8",font:{size:10}},grid:{color:"#f1f5f9"}},y:{stacked:true,ticks:{color:"#94a3b8",font:{size:10},callback:v=>"R$"+N(v)},grid:{color:"#f1f5f9"}}}}});
   const dnt=document.getElementById("chartDonut");
   if(dnt)CHARTS.donut=new Chart(dnt,{type:"doughnut",
-    data:{labels,datasets:[{data:C.map(c=>+c.investment.toFixed(2)),backgroundColor:colors,borderColor:"#fff",borderWidth:3}]},
-    options:{responsive:true,cutout:"62%",plugins:{legend:{position:"right",labels:{color:"#64748b",font:{size:11},padding:12}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${R(ctx.raw)} (${C[ctx.dataIndex].pct.toFixed(1)}%)`}}}}});
+    data:{labels,datasets:[{data:C.map(c=>+c.investment.toFixed(2)),backgroundColor:colors,borderColor:"#fff",borderWidth:3,hoverOffset:6}]},
+    options:{responsive:true,interaction:{mode:"nearest",intersect:false},cutout:"62%",plugins:{legend:{position:"right",labels:{color:"#64748b",font:{size:11},padding:12}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${R(ctx.raw)} (${C[ctx.dataIndex].pct.toFixed(1)}%)`}}}}});
 }
 
 function buildCampaignCharts(C){
@@ -1425,6 +1608,10 @@ function buildCampaignCharts(C){
     if(!el)return;
     const monthlyAgg=aggregateMonthly(monthlyRawRows,[groupKey(camp.base)]);
     if(!monthlyAgg.length)return;
+    if(monthlyAgg.length<2){
+      el.parentElement.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:11px;text-align:center;padding:20px">Dados históricos insuficientes<br><span style="font-size:10px;opacity:.7">Campanha com menos de 2 meses de dados</span></div>`;
+      return;
+    }
     const labels=monthlyAgg.map(m=>{const[y,mo]=m.month.split("-");return MN[parseInt(mo)-1]+"/"+y.slice(2);});
     // pick relevant metrics for this campaign
     const relevant=[];
@@ -1442,7 +1629,7 @@ function buildCampaignCharts(C){
         data:values.map(v=>+(v/maxVal*100).toFixed(1)),
         _raw:values,_fmt:cfg.fmt,
         borderColor:cfg.clr,backgroundColor:cfg.clr+"22",
-        fill:true,tension:0.4,pointRadius:2,pointHoverRadius:5,borderWidth:1.5,
+        fill:true,tension:0.4,pointRadius:2,pointHoverRadius:12,borderWidth:1.5,
       };
     });
     CHARTS["camp_"+i]=new Chart(el,{
@@ -1455,12 +1642,12 @@ function buildCampaignCharts(C){
           tooltip:{
             backgroundColor:"#fff",borderColor:"#e2e8f0",borderWidth:1,
             titleColor:"#64748b",bodyColor:"#0f172a",padding:8,
-            callbacks:{label:ctx=>" "+ctx.dataset.label+": "+ctx.dataset._fmt(ctx.dataset._raw[ctx.dataIndex])}
+            callbacks:{label:ctx=>{const raw=ctx.dataset._raw[ctx.dataIndex]||0;const isR=ctx.dataset._fmt===KPI_META.spend.fmt||ctx.dataset._fmt===KPI_META.cpc.fmt;return" "+ctx.dataset.label+": "+(isR?R(raw):(+raw).toLocaleString("pt-BR"));}}
           }
         },
         scales:{
           x:{ticks:{color:"#94a3b8",font:{size:9}},grid:{color:"#f1f5f9"}},
-          y:{min:0,max:100,ticks:{color:"#94a3b8",font:{size:9},callback:v=>v+"%"},grid:{color:"#f1f5f9"}},
+          y:{min:0,max:110,ticks:{color:"#94a3b8",font:{size:9},callback:v=>v<=100?v+"%":""},grid:{color:"#f1f5f9"}},
         }
       }
     });
@@ -1527,6 +1714,12 @@ function updateCampaignFilter(){
   // update KPI grid
   const ks=document.getElementById("kpiSection");
   if(ks) ks.innerHTML=kpiHTML(FCp,filteredTotal);
+  // update global weekly section
+  const gws=document.getElementById("globalWeeklySection");
+  if(gws){
+    gws.innerHTML=`<div class="section-title" style="margin-bottom:16px"><span>Acompanhamento Semanal</span></div>${globalWeeklySectionHTML(FCp)}`;
+    buildGlobalWeeklyCharts(FCp);
+  }
   // update budget table
   const bs=document.getElementById("budgetSection");
   if(bs)bs.innerHTML=budgetInnerHTML(FCp,filteredTotal);
